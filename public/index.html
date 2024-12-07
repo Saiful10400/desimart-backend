@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment status</title>
+</head>
+<body>
+    <h1 style="opacity:0;" id="message">{{message}}</h1> 
+</body>
+<script>
+    const message=document.getElementById("message").innerText
+   
+    window.location.href=`https://apollow-assignment-5-front-end.vercel.app/confirm-booking/${message}`
+</script>
+
+</html>
