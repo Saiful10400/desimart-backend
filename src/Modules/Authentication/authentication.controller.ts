@@ -122,17 +122,3 @@ export default authenticationController;
 
 
 
-// const chagePassword = catchAsync(async (req: Request, res: Response) => {
-//   const result = await AuthenticationService.login(req.body);
-  
-
-
- 
-//   sendResponse(res, {
-//     data,
-//     statusCode: httpStatus.OK,
-//     message: "password chaged successfully",
-//     success: true,
-//     token:accessToken
-//   });
-// });
