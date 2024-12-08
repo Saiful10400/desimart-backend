@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// user.
+
+model user {
+  userId   String @id @default(uuid())
+  email    String
+  password String
+  role     roles
+  status   status
+
+  buyer buyer?
+  vendor vendor?
+  admin admin?
+  review review[]
+  order order?
+}
+
+// ** sub roles.
+
+model buyer {
+  buyerId     String @id @default(uuid())
+  userId String @unique
+  users  user   @relation(fields: [userId], references: [userId])
+
+  email String
+  name String
+  photo String
+  isDeleted Boolean @default(false)
+}
+
+
+model vendor {
+  vendorId     String @id @default(uuid())
+  userId String @unique
+  users  user   @relation(fields: [userId], references: [userId])
+
+  email String
+  name String
+  photo String
+  isDeleted Boolean @default(false)
+
+  // shop relation.
+  shopId shop?
+}
+
+
+model admin {
+  adminId     String @id @default(uuid())
+  userId String @unique
+  users  user   @relation(fields: [userId], references: [userId])
+
+  email String
+  name String
+  photo String
+  isDeleted Boolean @default(false)
+}
+
+// / //////////////end./////////////////
+
+
+
+
+// shop
+model shop{
+  shopId String @id @default(uuid())
+  name String
+  logo String
+  products product[]
+  vendorId String @unique
+  vendor vendor @relation(fields: [vendorId],references: [vendorId])
+  order order[]
+}
+
+model product{
+  productId String @id @default(uuid())
+  name String
+  price Float
+  categoryId String
+  categoryref category @relation(fields: [categoryId],references: [categoryId])
+  image String
+  description String
+  shopId String @unique
+  shop shop @relation(fields: [shopId],references: [shopId])
+  review review[]
+  order order[]
+}
+
+
+
+model category{
+  categoryId String @id @default(uuid())
+  name String
+  productId product[] 
+}
+
+
+
+model review{
+  reviewId String @id @default(uuid())
+  productId String
+  product product @relation(fields: [productId],references: [productId])
+  rating Int
+  userId String
+  user user @relation(fields: [userId],references: [userId])
+}
+
+
+model order{
+  orderId String @id @default(uuid())
+  productId String
+  product product @relation(fields: [productId],references: [productId])
+  userId String @unique
+  user user @relation(fields: [userId],references: [userId])
+  shopId String @unique
+  shop shop @relation(fields: [shopId],references: [shopId])
+  cost Float
+  date DateTime @default(now())
+}
+
+
+
+
+// enums
+enum roles {
+  Admin
+  User
+  Vendor
+}
+
+enum status {
+  Block
+  Active
+}
