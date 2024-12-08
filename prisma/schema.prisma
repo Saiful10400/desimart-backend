@@ -20,13 +20,13 @@ model user {
   email    String
   password String
   role     roles
-  status   status
+  status   status @default(Active)
 
   buyer buyer?
   vendor vendor?
   admin admin?
   review review[]
-  order order?
+  order order[]
 }
 
 // ** sub roles.

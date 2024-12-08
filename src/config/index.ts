@@ -1,11 +1,17 @@
+
 import dotenv from "dotenv"
 import path from "path"
 
 dotenv.config({path:path.join(process.cwd(),".env")})
 
+
+
 export default{
-    url:process.env.DB_URL,
+    frontend_url:process.env.FRONT_END_URL,
     port:process.env.PORT,
     jwtSecret:process.env.JWT_SECRET,
-    accessTokenLife:process.env.access_token_life
+    accessTokenLife:process.env.access_token_life,
+    sender_email:process.env.SENDER_EMAIL,
+    sender_email_password:process.env.SENDER_EMAIL_Password
+   
 }

@@ -3,33 +3,28 @@ import catchAsync from "../../Utility/catchAsync";
 import AuthenticationService from "./authentication.service";
 import sendResponse from "../../Utility/sendResponse";
 import httpStatus from "http-status";
+import { TRequest } from "../../MiddleWare/auth";
+import appError from "../../Errors/appError";
+
 
 //1. create a user.
 const signup = catchAsync(async (req: Request, res: Response) => {
-
+console.log("hi")
   const result = await AuthenticationService.signup(req.body);
-  // const { data, accessToken } = result;
- 
-  // send token into cooken.
-  // res.cookie("accessToken", accessToken, {
-  //   secure: true,
-  //   httpOnly: true,
-  //   sameSite: "none",
-  //   maxAge: 1000 * 60 * 60 * 24 * 365,
-  // });
+  
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     data: result,
-    message: "User registered successfully",
-    // token:accessToken
+    message: "User signup successfully",
+
   });
 });
 
-//2. login a user.
+// 2. login a user.
 const login = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthenticationService.login(req.body);
-  // const token = req.headers.authorization;
+  
 const{data,accessToken}=result
 
  res.cookie("accessToken", accessToken, {
@@ -48,24 +43,96 @@ const{data,accessToken}=result
 });
 
 //3. login a user.
-const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
+// const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
   
-  const result = await AuthenticationService.getCurrentUser(req.userId);
+//   const result = await AuthenticationService.getCurrentUser(req.userId);
+ 
+//   sendResponse(res, {
+//     data:result,
+//     statusCode: httpStatus.OK,
+//     message: "Current logged in user id retrieved successfully",
+//     success: true,
+    
+//   });
+// });
+
+
+// 4.chage pass.
+const chagePassword = catchAsync(async (req: Request, res: Response) => {
+  const data = await AuthenticationService.changePassword(req.body);
+  
+
+
  
   sendResponse(res, {
-    data:result,
+    data,
     statusCode: httpStatus.OK,
-    message: "Current logged in user id retrieved successfully",
-    success: true,
-    
+    message: "password chaged successfully",
+    success: true
   });
 });
+
+// 5.rest pass.
+const restPassword = catchAsync(async (req: Request, res: Response) => {
+  const data = await AuthenticationService.resetPassword(req.body);
+  
+
+
+ 
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "reset email sended successfully",
+    success: true
+  });
+});
+// 5.rest new pass.  Part-2
+const resetNewPassword = catchAsync(async (req: TRequest, res: Response) => {
+  if(req.user?.email)  new appError(httpStatus.BAD_REQUEST,"No email found")
+  const data = await AuthenticationService.resetNewPassword({newPassword:req.body.newPassword,email:req?.user?.email});
+  
+
+
+ 
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "password updated successfully",
+    success: true
+  });
+});
+
+
+
+
  
 //  exporting the modules.
 const authenticationController = {
   signup,
   login,
-  getCurrentUser
+  chagePassword,
+  restPassword,
+  resetNewPassword
+  // getCurrentUser
 };
 
 export default authenticationController;
+
+
+
+
+
+// const chagePassword = catchAsync(async (req: Request, res: Response) => {
+//   const result = await AuthenticationService.login(req.body);
+  
+
+
+ 
+//   sendResponse(res, {
+//     data,
+//     statusCode: httpStatus.OK,
+//     message: "password chaged successfully",
+//     success: true,
+//     token:accessToken
+//   });
+// });
