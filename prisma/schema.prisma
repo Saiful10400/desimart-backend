@@ -22,118 +22,118 @@ model user {
   role     roles
   status   status @default(Active)
 
-  buyer buyer?
-  vendor vendor?
-  admin admin?
-  review review[]
-  order order[]
+  buyer          buyer?
+  vendor         vendor?
+  admin          admin?
+  followingStore shopUser[]
+  review         review[]
+  order          order[]
 }
+
+// shopuser
+model shopUser{
+  userId String
+  shopId String
+
+  userrel user @relation(fields: [userId],references: [userId])
+  shoprel shop @relation(fields: [shopId],references: [shopId])
+  @@id([userId,shopId])
+}
+
 
 // ** sub roles.
 
 model buyer {
-  buyerId     String @id @default(uuid())
-  userId String @unique
-  users  user   @relation(fields: [userId], references: [userId])
-
-  email String
-  name String
-  photo String
+  buyerId   String  @id @default(uuid())
+  userId    String  @unique
+  users     user    @relation(fields: [userId], references: [userId])
+  status    status  @default(Active)
+  email     String
+  name      String
+  photo     String
   isDeleted Boolean @default(false)
 }
 
-
 model vendor {
-  vendorId     String @id @default(uuid())
-  userId String @unique
-  users  user   @relation(fields: [userId], references: [userId])
-
-  email String
-  name String
-  photo String
+  vendorId  String  @id @default(uuid())
+  userId    String  @unique
+  users     user    @relation(fields: [userId], references: [userId])
+  status    status  @default(Active)
+  email     String
+  name      String
+  photo     String
   isDeleted Boolean @default(false)
 
   // shop relation.
   shopId shop?
 }
 
-
 model admin {
-  adminId     String @id @default(uuid())
-  userId String @unique
-  users  user   @relation(fields: [userId], references: [userId])
-
-  email String
-  name String
-  photo String
+  adminId   String  @id @default(uuid())
+  userId    String  @unique
+  users     user    @relation(fields: [userId], references: [userId])
+  status    status  @default(Active)
+  email     String
+  name      String
+  photo     String
   isDeleted Boolean @default(false)
 }
 
 // / //////////////end./////////////////
 
-
-
-
 // shop
-model shop{
-  shopId String @id @default(uuid())
-  name String
-  logo String
-  products product[]
-  vendorId String @unique
-  vendor vendor @relation(fields: [vendorId],references: [vendorId])
-  order order[]
+model shop {
+  shopId      String    @id @default(uuid())
+  name        String
+  status      status    @default(Active)
+  logo        String
+  products    product[]
+  vendorId    String    @unique
+  vendor      vendor    @relation(fields: [vendorId], references: [vendorId])
+  followersId shopUser[]
+  
 }
 
-model product{
-  productId String @id @default(uuid())
-  name String
-  price Float
-  categoryId String
-  categoryref category @relation(fields: [categoryId],references: [categoryId])
-  image String
-  description String
-  shopId String
+model product {
+  productId      String   @id @default(uuid())
+  name           String
+  price          Float
+  categoryId     String
+  categoryref    category @relation(fields: [categoryId], references: [categoryId])
+  image          String
+  description    String
+  shopId         String
   inventoryCount Int
-  shop shop @relation(fields: [shopId],references: [shopId])
-  review review[]
-  order order[]
+  shop           shop     @relation(fields: [shopId], references: [shopId])
+  review         review[]
+  order          order[]
 }
 
-
-
-model category{
-  categoryId String @id @default(uuid())
-  name String
-  productId product[] 
+model category {
+  categoryId String    @id @default(uuid())
+  name       String
+  productId  product[]
 }
 
-
-
-model review{
-  reviewId String @id @default(uuid())
+model review {
+  reviewId  String  @id @default(uuid())
   productId String
-  product product @relation(fields: [productId],references: [productId])
-  rating Int
-  userId String
-  user user @relation(fields: [userId],references: [userId])
+  product   product @relation(fields: [productId], references: [productId])
+  rating    Int
+  userId    String
+  user      user    @relation(fields: [userId], references: [userId])
 }
 
-
-model order{
-  orderId String @id @default(uuid())
+model order {
+  orderId   String  @id @default(uuid())
   productId String
-  product product @relation(fields: [productId],references: [productId])
-  userId String @unique
-  user user @relation(fields: [userId],references: [userId])
-  shopId String @unique
-  shop shop @relation(fields: [shopId],references: [shopId])
+  product   product @relation(fields: [productId], references: [productId])
+  userId    String  @unique
+  user      user    @relation(fields: [userId], references: [userId])
+
   cost Float
   date DateTime @default(now())
 }
-
-
-
 
 // enums
 enum roles {

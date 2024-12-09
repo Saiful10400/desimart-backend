@@ -1,17 +1,13 @@
 import httpStatus from "http-status";
 import sendResponse from "../../../Utility/sendResponse";
 import catchAsync from "../../../Utility/catchAsync";
-import { Response,Request } from "express";
+import { Response, Request } from "express";
 import adminService from "./admin.service";
-
 
 // create category.
 const createCategory = catchAsync(async (req: Request, res: Response) => {
   const data = await adminService.createCategory(req.body);
-  
 
-
- 
   sendResponse(res, {
     data,
     statusCode: httpStatus.OK,
@@ -19,25 +15,52 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
     success: true,
   });
 });
-// const chagePassword = catchAsync(async (req: Request, res: Response) => {
-//   const data = await AuthenticationService.login(req.body);
-  
+
+// manate catetory.
+const manageCategory = catchAsync(async (req: Request, res: Response) => {
+  const data = await adminService.manageCategory(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "catagory modefied successfully",
+    success: true,
+  });
+});
+
+// shop
+const manageShop = catchAsync(async (req: Request, res: Response) => {
+  const data = await adminService.manageShop(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "shop modefied successfully",
+    success: true,
+  });
+});
 
 
- 
-//   sendResponse(res, {
-//     data,
-//     statusCode: httpStatus.OK,
-//     message: "password chaged successfully",
-//     success: true,
-//   });
-// });
+
+// user/vendro manage.
+const manageUser=catchAsync(async (req: Request, res: Response) => {
+  const data = await adminService.manageShop(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "user/vendor modefied successfully",
+    success: true,
+  });
+});
 
 
 
+const adminController = {
+  createCategory,
+  manageCategory,
+  manageShop,
+  manageUser
+};
 
-const adminController={
-createCategory
-}
-
-export default adminController
+export default adminController;

@@ -1,5 +1,6 @@
+import { status } from "@prisma/client"
 import prisma from "../../../config/prisma.config"
-
+import { Request } from "express"
 
 // cteate category
 const createCategory=async(payload:{name:string})=>{
@@ -11,7 +12,89 @@ const createCategory=async(payload:{name:string})=>{
     return result
 }
 
+
+
+// manage category.
+const manageCategory=async(payload:Request)=>{
+
+    if(payload.query?.delete==="true"){
+        const result=await prisma.$transaction(async(tnx)=>{
+           const productDelete= await tnx.product.deleteMany({
+                where:{
+                    categoryId:payload.params?.id
+                }
+            })
+            const categoryDelete=await tnx.category.delete({
+                where:{
+                    categoryId:payload.params?.id
+                }
+            })
+            return{productDelete,categoryDelete}
+        })
+     
+        return{
+            delete:true,
+            message:"category deleted.",
+            result
+        }
+    }
+
+
+
+
+
+    const result=await prisma.category.update({
+        where:{
+            categoryId:payload.params?.id
+        },
+        data:payload.body
+    })
+    return result
+}
+
+
+// manage shop
+const manageShop=async(payload:Request)=>{
+
+    const result=await prisma.shop.update({
+        where:{
+            shopId:payload.params.id
+        },
+        data:{
+            status:payload.query?.block!=="true"?status.Active:status.Block
+        }
+    })
+    return{
+        modified:true,
+        message:`store ${payload.query?.block==="true"?"block (true)":"unblock (false)"}`
+        ,result
+    } 
+ 
+}
+
+
+
+
+// manage user  (w)
+const manageuser=async(payload:Request)=>{
+
+    // {operation,}
+    
+ 
+}
+ 
+
+
+
+
+
+
+
+
 const adminService={
-createCategory
+createCategory,
+manageCategory,
+manageShop,
+manageuser
 }
 export default adminService
