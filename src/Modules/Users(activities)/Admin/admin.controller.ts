@@ -15,7 +15,7 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     data,
     statusCode: httpStatus.OK,
-    message: "Catetory crated successfully",
+    message: "Caegory crated successfully",
     success: true,
   });
 });

@@ -17,7 +17,7 @@ datasource db {
 
 model user {
   userId   String @id @default(uuid())
-  email    String
+  email    String @unique
   password String
   role     roles
   status   status @default(Active)
@@ -93,7 +93,8 @@ model product{
   categoryref category @relation(fields: [categoryId],references: [categoryId])
   image String
   description String
-  shopId String @unique
+  shopId String
+  inventoryCount Int
   shop shop @relation(fields: [shopId],references: [shopId])
   review review[]
   order order[]

@@ -28,10 +28,25 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// update product.
+const updateProduct = catchAsync(async (req: Request, res: Response) => {
+
+
+  const data = await vendorService.updateProduct(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "product modified successfully",
+    success: true,
+  });
+});
+
 
 const vendorController = {
   createProduct,
-  createStore
+  createStore,
+  updateProduct
 };
 
 export default vendorController;

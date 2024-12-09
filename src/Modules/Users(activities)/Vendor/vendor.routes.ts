@@ -8,10 +8,10 @@ router.post("/create-shop",vendorController.createProduct)
 
 
 // add product.
-router.post("/create-product")
+router.post("/create-product",vendorController.createProduct)
 
 // update product/manage
-router.post("/manage-product/:id")
+router.post("/manage-product/:id",vendorController.updateProduct)
 
 
 
