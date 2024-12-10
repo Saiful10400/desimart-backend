@@ -49,12 +49,19 @@ const getCategory = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getProducts = catchAsync(async (req: Request, res: Response) => {
-  const data = await commonService.getProducts(req.query);
+  let data
+
+  if(req?.query?.id){
+    data=await commonService.getSingleProduct(req?.query?.id as string)
+  }
+  else{
+    data=await commonService.getProducts(req.query)
+  }
 
   sendResponse(res, {
     data,
     statusCode: httpStatus.OK,
-    message: "Products retrieved",
+    message: "Product retrieved",
     success: true,
   });
 });

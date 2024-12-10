@@ -147,9 +147,19 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
   return { total: count, result };
 };
 
+const getSingleProduct=async(id:string)=>{
+  const result=await prisma.product.findFirstOrThrow({
+  where:{
+    productId:id
+  }
+  })
+  return result
+}
+
 const commonService = {
   getUsers,
   getShop,
+  getSingleProduct,
   getCatetory,
   getProducts,
   getSingleShop

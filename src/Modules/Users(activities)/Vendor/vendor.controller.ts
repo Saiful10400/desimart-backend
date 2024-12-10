@@ -16,6 +16,18 @@ const createStore = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// update store
+const updateStore = catchAsync(async (req: Request, res: Response) => {
+  const data = await vendorService.updateStore(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "Store modified successfully",
+    success: true,
+  });
+});
+
 // create product.
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const data = await vendorService.createProduct(req.body);
@@ -30,8 +42,6 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 
 // update product.
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
-
-
   const data = await vendorService.updateProduct(req);
 
   sendResponse(res, {
@@ -42,11 +52,41 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// coupne.
+const createCoupne = catchAsync(async (req: Request, res: Response) => {
+  const data = await vendorService.createCoupne(req.body);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "coupne created successfully",
+    success: true,
+  });
+});
+
+const updateCoupne = catchAsync(async (req: Request, res: Response) => {
+  let data;
+  if (req.query.delete === "true") {
+    data = await vendorService.deleteCoupne(req.params.id as string);
+  } else {
+    data = await vendorService.updateCoupne(req);
+  }
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "coupne modified successfully",
+    success: true,
+  });
+});
 
 const vendorController = {
   createProduct,
   createStore,
-  updateProduct
+  updateProduct,
+  updateStore,
+  createCoupne,
+  updateCoupne,
 };
 
 export default vendorController;

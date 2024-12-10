@@ -28,30 +28,34 @@ model user {
   followingStore shopUser[]
   review         review[]
   order          order[]
+  created        DateTime   @default(now())
+  updated        DateTime   @updatedAt()
 }
 
 // shopuser
-model shopUser{
+model shopUser {
   userId String
   shopId String
 
-  userrel user @relation(fields: [userId],references: [userId])
-  shoprel shop @relation(fields: [shopId],references: [shopId])
-  @@id([userId,shopId])
-}
+  userrel user @relation(fields: [userId], references: [userId])
+  shoprel shop @relation(fields: [shopId], references: [shopId])
 
+  @@id([userId, shopId])
+}
 
 // ** sub roles.
 
 model buyer {
-  buyerId   String  @id @default(uuid())
-  userId    String  @unique
-  users     user    @relation(fields: [userId], references: [userId])
-  status    status  @default(Active)
+  buyerId   String   @id @default(uuid())
+  userId    String   @unique
+  users     user     @relation(fields: [userId], references: [userId])
+  status    status   @default(Active)
   email     String
   name      String
   photo     String
-  isDeleted Boolean @default(false)
+  isDeleted Boolean  @default(false)
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt()
 }
 
 model vendor {
@@ -65,63 +69,76 @@ model vendor {
   isDeleted Boolean @default(false)
 
   // shop relation.
-  shopId shop?
+  shopId  shop?
+  created DateTime @default(now())
+  updated DateTime @updatedAt()
 }
 
 model admin {
-  adminId   String  @id @default(uuid())
-  userId    String  @unique
-  users     user    @relation(fields: [userId], references: [userId])
-  status    status  @default(Active)
+  adminId   String   @id @default(uuid())
+  userId    String   @unique
+  users     user     @relation(fields: [userId], references: [userId])
+  status    status   @default(Active)
   email     String
   name      String
   photo     String
-  isDeleted Boolean @default(false)
+  isDeleted Boolean  @default(false)
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt()
 }
 
 // / //////////////end./////////////////
 
 // shop
 model shop {
-  shopId      String    @id @default(uuid())
+  shopId      String     @id @default(uuid())
   name        String
-  status      status    @default(Active)
+  status      status     @default(Active)
   logo        String
   products    product[]
-  vendorId    String    @unique
-  vendor      vendor    @relation(fields: [vendorId], references: [vendorId])
+  vendorId    String     @unique
+  vendor      vendor     @relation(fields: [vendorId], references: [vendorId])
   followersId shopUser[]
-  
+  coupne      coupne[]
+  created     DateTime   @default(now())
+  updated     DateTime   @updatedAt()
 }
 
 model product {
-  productId      String   @id @default(uuid())
+  productId      String        @id @default(uuid())
   name           String
   price          Float
   categoryId     String
-  categoryref    category @relation(fields: [categoryId], references: [categoryId])
+  categoryref    category      @relation(fields: [categoryId], references: [categoryId])
   image          String
   description    String
   shopId         String
   inventoryCount Int
-  shop           shop     @relation(fields: [shopId], references: [shopId])
+  publishStatus  publishStatus
+  shop           shop          @relation(fields: [shopId], references: [shopId])
   review         review[]
   order          order[]
+  created        DateTime      @default(now())
+  updated        DateTime      @updatedAt()
 }
 
 model category {
   categoryId String    @id @default(uuid())
   name       String
   productId  product[]
+  created    DateTime  @default(now())
+  updated    DateTime  @updatedAt()
 }
 
 model review {
-  reviewId  String  @id @default(uuid())
+  reviewId  String   @id @default(uuid())
   productId String
-  product   product @relation(fields: [productId], references: [productId])
+  product   product  @relation(fields: [productId], references: [productId])
   rating    Int
   userId    String
-  user      user    @relation(fields: [userId], references: [userId])
+  user      user     @relation(fields: [userId], references: [userId])
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt()
 }
 
 model order {
@@ -131,8 +148,20 @@ model order {
   userId    String  @unique
   user      user    @relation(fields: [userId], references: [userId])
 
-  cost Float
-  date DateTime @default(now())
+  cost    Float
+  date    DateTime @default(now())
+  created DateTime @default(now())
+  updated DateTime @updatedAt()
+}
+
+model coupne {
+  coupneId       String   @id @default(uuid())
+  shopId         String   
+  shop           shop     @relation(fields: [shopId], references: [shopId])
+  code           String   @unique
+  discount       Int
+  minimumExpence Int
+  untill         DateTime
 }
 
 // enums
@@ -145,4 +174,9 @@ enum roles {
 enum status {
   Block
   Active
+}
+
+enum publishStatus {
+  Publick
+  Private
 }
