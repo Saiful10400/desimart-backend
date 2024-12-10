@@ -41,6 +41,15 @@ const getShop = async (offset: number, limit: number) => {
   return { total: count, result };
 };
 
+const getSingleShop=async(id:string)=>{
+  const result=await prisma.shop.findUniqueOrThrow({
+    where:{
+      shopId:id
+    }
+  })
+  return result
+}
+
 const getCatetory = async () => {
   const result = await prisma.category.findMany();
   return result;
@@ -143,5 +152,6 @@ const commonService = {
   getShop,
   getCatetory,
   getProducts,
+  getSingleShop
 };
 export default commonService;

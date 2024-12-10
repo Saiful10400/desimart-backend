@@ -4,7 +4,7 @@ import vendorController from "./vendor.controller";
 const router=Router()
 
 // create shop.
-router.post("/create-shop",vendorController.createProduct)
+router.post("/create-shop",vendorController.createStore)
 
 
 // add product.
