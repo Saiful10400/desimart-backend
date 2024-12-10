@@ -28,8 +28,9 @@ model user {
   followingStore shopUser[]
   review         review[]
   order          order[]
-  created        DateTime   @default(now())
-  updated        DateTime   @updatedAt()
+  created        DateTime         @default(now())
+  updated        DateTime         @updatedAt()
+  recentProductsVisit recentProducts[]
 }
 
 // shopuser
@@ -105,21 +106,22 @@ model shop {
 }
 
 model product {
-  productId      String        @id @default(uuid())
+  productId      String           @id @default(uuid())
   name           String
   price          Float
   categoryId     String
-  categoryref    category      @relation(fields: [categoryId], references: [categoryId])
+  categoryref    category         @relation(fields: [categoryId], references: [categoryId])
   image          String
   description    String
   shopId         String
   inventoryCount Int
   publishStatus  publishStatus
-  shop           shop          @relation(fields: [shopId], references: [shopId])
+  shop           shop             @relation(fields: [shopId], references: [shopId])
   review         review[]
   order          order[]
-  created        DateTime      @default(now())
-  updated        DateTime      @updatedAt()
+  created        DateTime         @default(now())
+  updated        DateTime         @updatedAt()
+  recentProductsVisit recentProducts[]
 }
 
 model category {
@@ -156,12 +158,22 @@ model order {
 
 model coupne {
   coupneId       String   @id @default(uuid())
-  shopId         String   
+  shopId         String
   shop           shop     @relation(fields: [shopId], references: [shopId])
   code           String   @unique
   discount       Int
   minimumExpence Int
   untill         DateTime
+}
+
+model recentProducts {
+  recentProductId String  @id @default(uuid())
+  productId       String
+  product         product @relation(fields: [productId], references: [productId])
+
+  userId  String
+  user    user     @relation(fields: [userId], references: [userId])
+  created DateTime @default(now())
 }
 
 // enums

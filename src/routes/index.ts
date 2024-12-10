@@ -5,6 +5,7 @@ import adminRoutes from "../Modules/Users(activities)/Admin/admin.routes"
 import orderRouter from "../Modules/Orders/order.route"
 import storeRoute from "../Modules/store/store.routes"
 import commonRoutes from "../Modules/CommonApis/common.routes"
+import buyerRoutes from "../Modules/Users(activities)/Buyer/buyer.routes"
 
 
 const routes=Router()
@@ -37,6 +38,10 @@ const moduleRoutes=[
     {
         path:"/common",
         route:commonRoutes
+    },
+    {
+        path:"/user",
+        route:buyerRoutes
     },
     
 ]
