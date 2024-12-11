@@ -12,6 +12,9 @@ export default{
     jwtSecret:process.env.JWT_SECRET,
     accessTokenLife:process.env.access_token_life,
     sender_email:process.env.SENDER_EMAIL,
-    sender_email_password:process.env.SENDER_EMAIL_Password
+    sender_email_password:process.env.SENDER_EMAIL_Password,
+    clowd_name:process.env.CLOWD_NAME,
+    api_key:process.env.API_KEY,
+    api_secret:process.env.API_SECRET,
    
 }

@@ -3,11 +3,10 @@ import appError from "../../Errors/appError";
 import prisma from "../../config/prisma.config";
 import { Tuser } from "./authentication.type";
 import config from "../../config";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import sendMail from "../../Utility/sendMail";
 // 1. signup.
 const signup = async (payload: Tuser) => {
-  console.log(payload);
   // let's check is the same user is exixt or not.
   const isUserExist = await prisma.user.findFirst({
     where: {
@@ -82,13 +81,9 @@ const login = async (payload: { email: string; password: string }) => {
     id: data.userId,
     role: data.role,
   };
-  const accessToken = jwt.sign(
-    jwtPayload,
-    config.jwtSecret as string,
-    {
-      expiresIn: config.accessTokenLife,
-    }
-  );
+  const accessToken = jwt.sign(jwtPayload, config.jwtSecret as string, {
+    expiresIn: config.accessTokenLife,
+  });
 
   return { data, accessToken };
 };
@@ -102,71 +97,74 @@ const login = async (payload: { email: string; password: string }) => {
 
 // 3. change pasword.
 
-const changePassword=async(payload:{newPassword:string,oldPassword:string,email:string})=>{
-
+const changePassword = async (payload: {
+  newPassword: string;
+  oldPassword: string;
+  email: string;
+}) => {
   await prisma.user.findFirstOrThrow({
-    where:{
-      email:payload.email,
-      password:payload.oldPassword
-    }
-  })
-await prisma.user.updateMany({
-  where:{
-    password:payload.oldPassword,
-    email:payload.email
-  },
-  data:{
-    password:payload.newPassword
-  }
-})
- const reult= await prisma.user.findFirst({
-  where:{
-    password:payload.newPassword,
-    email:payload.email
-  }
-})
-return reult
-
-
-}
-
+    where: {
+      email: payload.email,
+      password: payload.oldPassword,
+    },
+  });
+  await prisma.user.updateMany({
+    where: {
+      password: payload.oldPassword,
+      email: payload.email,
+    },
+    data: {
+      password: payload.newPassword,
+    },
+  });
+  const reult = await prisma.user.findFirst({
+    where: {
+      password: payload.newPassword,
+      email: payload.email,
+    },
+  });
+  return reult;
+};
 
 //  4. reset password.
 
-const resetPassword=async(payload:{email:string})=>{
-
+const resetPassword = async (payload: { email: string }) => {
   await prisma.user.findFirstOrThrow({
-    where:{
-      email:payload.email
-    }
-  })
+    where: {
+      email: payload.email,
+    },
+  });
 
-
-  const token=jwt.sign(payload,(config.jwtSecret as string),{expiresIn:"5m"})
-  const result=`${config.frontend_url}/reset-password?token=${token}`
-  console.log(result)
-  return sendMail(result,payload.email)
-}
+  const token = jwt.sign(payload, config.jwtSecret as string, {
+    expiresIn: "5m",
+  });
+  const result = `${config.frontend_url}/reset-password?token=${token}`;
+  console.log(result);
+  return sendMail(result, payload.email);
+};
 
 //  5. reset new password.
-const resetNewPassword=async(payload:{newPassword:string,email:string|undefined})=>{
-  const result=await prisma.user.updateMany({
-    where:{
-      email:payload.email,
+const resetNewPassword = async (payload: {
+  newPassword: string;
+  email: string | undefined;
+}) => {
+  const result = await prisma.user.updateMany({
+    where: {
+      email: payload.email,
     },
-    data:{
-      password:payload.newPassword
-    }
-  })
-  return result
-}
+    data: {
+      password: payload.newPassword,
+    },
+  });
+  return result;
+};
 
 const AuthenticationService = {
   signup,
   login,
   changePassword,
   resetPassword,
-  resetNewPassword
+  resetNewPassword,
   // getCurrentUser
 };
 

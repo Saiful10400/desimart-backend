@@ -4,6 +4,9 @@ import { Request, Response } from "express";
 import httpStatus from "http-status";
 import commonService from "./common.service";
 
+
+
+
 const getUser = catchAsync(async (req: Request, res: Response) => {
   const data = await commonService.getUsers(
     Number(req.query.offset),
@@ -65,12 +68,31 @@ const getProducts = catchAsync(async (req: Request, res: Response) => {
     success: true,
   });
 });
+
+
+const upload = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.body)
+
+ 
+// const result=await cloudinary.uploader.upload(req.file.path,(er,result)=>{
+//   // console.log({er,result})
+// })
+  
+
+  // sendResponse(res, {
+  //   data,
+  //   statusCode: httpStatus.OK,
+  //   message: "store fetched",
+  //   success: true,
+  // });
+});
  
 const commonController = {
   getUser,
   getStore,
   getCategory,
   getProducts,
+  upload
 };
 
 export default commonController;

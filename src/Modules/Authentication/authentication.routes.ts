@@ -2,12 +2,14 @@ import { Router } from "express";
 import authenticationController from "./authentication.controller";
 import auth from "../../MiddleWare/auth";
 import { roles } from "@prisma/client";
+import multerUpload from "../../MiddleWare/multerUpload";
+import liveUrlSetter from "../../MiddleWare/LiveUrlSetter";
 
 const router=Router()
 
 
 // signup.
-router.post("/signup",authenticationController.signup)
+router.post("/signup",multerUpload.upload.single("photo"),liveUrlSetter("photo"),authenticationController.signup)
 
 // login
 router.post("/login",authenticationController.login)
