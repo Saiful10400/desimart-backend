@@ -15,8 +15,11 @@ router.post("/manage-shop/:id",multerUpload.upload.single("logo"),liveUrlSetter(
 // add product.
 router.post("/create-product",multerUpload.upload.single("image"),liveUrlSetter("image"),vendorController.createProduct)
 
+
+
+
 // update product/manage
-router.post("/manage-product/:id",multerUpload.upload.single("image"),liveUrlSetter("image"),vendorController.updateProduct)
+router.post("/manage-product/:id",multerUpload.upload.single("photo"),liveUrlSetter("image"),vendorController.updateProduct)
 
 // create coupne
 router.post("/create-coupne",vendorController.createCoupne)

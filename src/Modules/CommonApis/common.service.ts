@@ -2,9 +2,9 @@
 
 import { Prisma, roles } from "@prisma/client";
 import prisma from "../../config/prisma.config";
-import { object } from "zod";
+import { Request } from "express";
 
-const getUsers = async (offset: number, limit: number) => {
+const getUsers = async (offset: number = 10, limit: number) => {
   const count = await prisma.user.count({
     where: {
       role: {
@@ -13,17 +13,31 @@ const getUsers = async (offset: number, limit: number) => {
     },
   });
 
-  let condition: Prisma.userFindManyArgs = {
+  const condition: Prisma.userFindManyArgs = {
     where: {
       role: {
         not: roles.Admin,
       },
+      isDeleted: false,
+    },
+    orderBy: {
+      userId: "asc",
+    },
+    take: limit || 10,
+    skip: offset,
+    select: {
+      buyer: true,
+      vendor: true,
+      role: true,
+      email: true,
+      userId: true,
+      status: true,
     },
   };
-  if ((limit || limit === 0) && (offset || offset === 0)) {
-    condition = { ...condition, take: limit, skip: offset };
-  }
-
+  // if ((limit || limit === 0) && (offset || offset === 0)) {
+  //   condition = { ...condition, take: 2, skip: 0 };
+  // }
+  console.log({ limit, offset });
   const result = await prisma.user.findMany(condition);
 
   return { total: count, result };
@@ -41,14 +55,36 @@ const getShop = async (offset: number, limit: number) => {
   return { total: count, result };
 };
 
-const getSingleShop=async(id:string)=>{
-  const result=await prisma.shop.findUniqueOrThrow({
-    where:{
-      shopId:id
-    }
-  })
-  return result
-}
+const getSingleShop = async (id: string) => {
+  const result = await prisma.shop.findUniqueOrThrow({
+    where: {
+      shopId: id,
+    },
+    select: {
+      coupne: true,
+      logo: true,
+      name: true,
+      shopId: true,
+      description: true,
+      followersId: true,
+      _count: {
+        select: {
+          followersId: true,
+        },
+      },
+      status: true,
+
+      vendor: {
+        select: {
+          name: true,
+          email: true,
+          photo: true,
+        },
+      },
+    },
+  });
+  return result;
+};
 
 const getCatetory = async () => {
   const result = await prisma.category.findMany();
@@ -69,10 +105,31 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     where: {
       AND: [],
     },
+    select: {
+      image: true,
+      name: true,
+      productId: true,
+      categoryref: {
+        select: {
+          name: true,
+        },
+      },
+      description: true,
+      flashSale: true,
+      inventoryCount: true,
+      price: true,
+      _count: {
+        select: {
+          review: true,
+        },
+      },
+      created: true,
+      shop: { select: { name: true, logo: true, shopId: true } },
+    },
   };
 
   if (Object.keys(payload).length === 0) {
-    condition = {};
+    condition = { select: condition.select };
   }
 
   // pagination
@@ -140,28 +197,132 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     });
   }
 
-  console.dir(condition, { depth: Infinity });
-  const result = await prisma.product.findMany(condition);
-  const count=await prisma.product.count(condition)
+  const result = await prisma.product.findMany({
+    ...condition,
+    orderBy: { created: "desc" },
+  });
+  const count = await prisma.product.count();
 
   return { total: count, result };
 };
 
-const getSingleProduct=async(id:string)=>{
-  const result=await prisma.product.findFirstOrThrow({
-  where:{
-    productId:id
-  }
+const getSingleProduct = async (id: string) => {
+ 
+  const result = await prisma.product.findFirstOrThrow({
+    where: {
+      productId: id,
+    },
+    select: {
+      image: true,
+      name: true,
+      productId: true,
+      categoryref: {
+        select: {
+          name: true,
+        },
+      },
+      description: true,
+      flashSale: true,
+      inventoryCount: true,
+      price: true,
+      review:true,
+      _count: {
+        select: {
+          review: true,
+        },
+      },
+      created: true,
+      shop: { select: { name: true, logo: true, shopId: true } },
+    },
+  });
+  return result;
+};
+
+const getStoreAllProducts = async (payload: Request) => {
+  console.log(payload.params);
+  const result = await prisma.product.findMany({
+    where: {
+      shopId: payload.params.id,
+      isDeleted: false,
+    },
+    select: {
+      categoryref: {
+        select: { name: true },
+      },
+      image: true,
+      description: true,
+      name: true,
+      price: true,
+      publishStatus: true,
+      review: true,
+      inventoryCount: true,
+      categoryId: true,
+      productId: true,
+      shopId: true,
+      flashSale: true,
+    },
+    skip: Number(payload.query.offset),
+    take: Number(payload.query.limit),
+    orderBy: {
+      created: "desc",
+    },
+  });
+  const total = await prisma.product.count({
+    where: {
+      shopId: payload.params.id,
+      isDeleted: false,
+    },
+  });
+  return { result, total };
+};
+
+
+const followingProduct=async(payload:Request)=>{
+
+  const followingShop=payload.body
+  
+  const idarray=[]
+  followingShop?.followingStore?.map(item=>idarray.push(item.shopId))
+
+  
+
+  const result=prisma.product.findMany({
+    where:{
+      shopId:{
+        in:idarray
+      }
+    },
+    select: {
+      categoryref: {
+        select: { name: true },
+      },
+      image: true,
+      description: true,
+      name: true,
+      price: true,
+      publishStatus: true,
+      review: true,
+      inventoryCount: true,
+      categoryId: true,
+      productId: true,
+      shopId: true,
+      flashSale: true,
+    },
   })
   return result
+
 }
+ 
+
 
 const commonService = {
   getUsers,
+  followingProduct,
+  getStoreAllProducts,
   getShop,
   getSingleProduct,
   getCatetory,
   getProducts,
-  getSingleShop
+  getSingleShop,
 };
 export default commonService;

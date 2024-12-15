@@ -7,7 +7,12 @@ const router=Router()
 router.post("/create",orderController.createOrder)
 
 
-router.get("/")
+router.post("/create-payment-link",orderController.createPaymentLInk)
+
+router.post("/order-postProcess/:id",orderController.orderPostProcess)
+
+
+router.get("/get-all-order-by-id",orderController.getAllOrders)
 
 
 

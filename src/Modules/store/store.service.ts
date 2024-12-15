@@ -1,7 +1,9 @@
 import { shopUser } from "@prisma/client"
 import prisma from "../../config/prisma.config"
+import { Request } from "express"
 
 const manageFollow=async(payload:shopUser)=>{
+    console.log(payload)
 
 // find follow
 const isExist=await prisma.shopUser.findFirst({
@@ -33,10 +35,22 @@ return{
 
 }
 
+const checkCoupon=async(payload:Request)=>{
+    const result=prisma.coupne.findFirst({
+        where:{
+            shopId:payload.params.id,
+            code:payload.body.code
+        }
+    })
+
+    return result
+}
+
 
 
 const storeService={
-    manageFollow
+    manageFollow,
+    checkCoupon
 }
 
 

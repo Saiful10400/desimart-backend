@@ -12,10 +12,15 @@ router.get("/user",commonController.getUser)
 router.get("/store",commonController.getStore)
 router.get("/category",commonController.getCategory)
 router.get("/products",commonController.getProducts)
+router.get("/store-products/:id",commonController.getStoreAllProducts)
 
 
 // multer file upload.
 router.post("/upload",multerUpload.upload.single("file"),liveUrlSetter("profileImageUrl"),commonController.upload)
+
+
+// following shop.
+router.post("/product-following",commonController.followingProduct)
 
 
 

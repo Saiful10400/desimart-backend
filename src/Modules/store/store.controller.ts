@@ -15,10 +15,22 @@ const createFollow=catchAsync(async (req: Request, res: Response) => {
     });
   });
 
+const checkCoupon=catchAsync(async (req: Request, res: Response) => {
+    const data = await storeService.checkCoupon(req);
+  
+    sendResponse(res, {
+      data,
+      statusCode: httpStatus.OK,
+      message: data?"Coupne applyed":"No coupne found",
+      success: true,
+    });
+  });
+
 
 
   const storeController={
-    createFollow
+    createFollow,
+    checkCoupon
   }
 
   export default storeController

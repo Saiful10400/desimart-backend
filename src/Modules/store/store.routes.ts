@@ -6,6 +6,7 @@ const router=Router()
 
 
 router.post("/manage-follow",storeController.createFollow)
+router.post("/check-coupon/:id",storeController.checkCoupon)
 
 
 

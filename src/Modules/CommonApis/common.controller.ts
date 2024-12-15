@@ -4,10 +4,8 @@ import { Request, Response } from "express";
 import httpStatus from "http-status";
 import commonService from "./common.service";
 
-
-
-
 const getUser = catchAsync(async (req: Request, res: Response) => {
+  console.log("fired.");
   const data = await commonService.getUsers(
     Number(req.query.offset),
     Number(req.query.limit)
@@ -52,13 +50,12 @@ const getCategory = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getProducts = catchAsync(async (req: Request, res: Response) => {
-  let data
+  let data;
 
-  if(req?.query?.id){
-    data=await commonService.getSingleProduct(req?.query?.id as string)
-  }
-  else{
-    data=await commonService.getProducts(req.query)
+  if (req?.query?.id) {
+    data = await commonService.getSingleProduct(req?.query?.id as string);
+  } else {
+    data = await commonService.getProducts(req.query);
   }
 
   sendResponse(res, {
@@ -69,15 +66,37 @@ const getProducts = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getStoreAllProducts = catchAsync(async (req: Request, res: Response) => {
+  const data = await commonService.getStoreAllProducts(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "Product retrieved",
+    success: true,
+  });
+});
+ 
+
+
+const followingProduct = catchAsync(async (req: Request, res: Response) => {
+  const data = await commonService.followingProduct(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "Product retrieved",
+    success: true,
+  });
+});
+ 
 
 const upload = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body)
+  console.log(req.body);
 
- 
-// const result=await cloudinary.uploader.upload(req.file.path,(er,result)=>{
-//   // console.log({er,result})
-// })
-  
+  // const result=await cloudinary.uploader.upload(req.file.path,(er,result)=>{
+  //   // console.log({er,result})
+  // })
 
   // sendResponse(res, {
   //   data,
@@ -86,13 +105,15 @@ const upload = catchAsync(async (req: Request, res: Response) => {
   //   success: true,
   // });
 });
- 
+
 const commonController = {
   getUser,
   getStore,
   getCategory,
   getProducts,
-  upload
+  upload,
+  followingProduct,
+  getStoreAllProducts,
 };
 
 export default commonController;

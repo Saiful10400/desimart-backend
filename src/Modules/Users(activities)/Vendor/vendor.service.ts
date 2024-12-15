@@ -1,10 +1,12 @@
 import { coupne, publishStatus } from "@prisma/client";
 import prisma from "../../../config/prisma.config";
 import { Request } from "express";
+import appError from "../../../Errors/appError";
 export interface Tshop {
   logo: string;
   name: string;
   vendorId: string;
+  description: string;
 }
 
 export interface TproductCreate {
@@ -15,7 +17,7 @@ export interface TproductCreate {
   price: number;
   shopId: string;
   categoryId: string;
-  publishStatus:publishStatus
+  publishStatus: publishStatus;
 }
 
 // create store.
@@ -25,6 +27,7 @@ const createStore = async (payload: Tshop) => {
       logo: payload.logo,
       name: payload.name,
       vendorId: payload.vendorId,
+      description: payload.description,
     },
   });
   return result;
@@ -33,23 +36,22 @@ const createStore = async (payload: Tshop) => {
 // update store.
 const updateStore = async (payload: Request) => {
   if (payload?.query?.delete === "true") {
-    
-const result=await prisma.$transaction(async(tnx)=>{
-  const deleteProduct=await tnx.product.deleteMany({
-    where:{
-      shopId:payload.params.id
-    }
-  })
-  const deleteStore=await tnx.shop.delete({
-    where:{
-      shopId:payload.params.id
-    }
-  })
-  return{
-    deleteProduct,deleteStore
-  }
-})
-
+    const result = await prisma.$transaction(async (tnx) => {
+      const deleteProduct = await tnx.product.deleteMany({
+        where: {
+          shopId: payload.params.id,
+        },
+      });
+      const deleteStore = await tnx.shop.delete({
+        where: {
+          shopId: payload.params.id,
+        },
+      });
+      return {
+        deleteProduct,
+        deleteStore,
+      };
+    });
 
     return {
       delete: true,
@@ -59,7 +61,11 @@ const result=await prisma.$transaction(async(tnx)=>{
   }
 
   // lets update the procuct.
-  const data: Partial<Tshop> = payload.body;
+  let data: Partial<Tshop> = payload.body;
+
+  if (data.logo === "undefined") {
+    data = { name: data.name, description: data.description };
+  }
 
   const result = await prisma.shop.update({
     where: {
@@ -78,11 +84,12 @@ const createProduct = async (payload: TproductCreate) => {
       description: payload.description,
       image: payload.image,
       name: payload.name,
-      price: payload.price,
+      price: Number(payload.price),
       shopId: payload.shopId,
-      inventoryCount: payload.inventoryCount,
+      inventoryCount: Number(payload.inventoryCount),
       categoryId: payload.categoryId,
-      publishStatus:payload.publishStatus
+      publishStatus: payload.publishStatus,
+      flashSale: payload.flashSale === "yes" ? true : false,
     },
   });
 
@@ -92,9 +99,12 @@ const createProduct = async (payload: TproductCreate) => {
 // update product.
 const updateProduct = async (payload: Request) => {
   if (payload?.query?.delete === "true") {
-    const result = await prisma.product.delete({
+    const result = await prisma.product.update({
       where: {
         productId: payload.params?.id,
+      },
+      data: {
+        isDeleted: true,
       },
     });
     return {
@@ -103,9 +113,43 @@ const updateProduct = async (payload: Request) => {
       result,
     };
   }
+  if (payload?.query?.duplicate === "true") {
+    const currentProduct = await prisma.product.findFirst({
+      where: {
+        productId: payload.params.id,
+      },
+    });
+
+    if (!currentProduct) {
+      throw new appError(401, "Your provided product doesn't exist.");
+    }
+
+    const result = await prisma.product.create({
+      data: {
+        description: currentProduct?.description,
+        image: currentProduct?.image,
+        name: currentProduct?.name,
+        inventoryCount: currentProduct?.inventoryCount,
+        price: currentProduct?.price,
+        publishStatus: currentProduct?.publishStatus,
+        shopId: currentProduct?.shopId,
+        categoryId: currentProduct.categoryId,
+        flashSale: currentProduct.flashSale,
+      },
+    });
+    return {
+      duplicate: true,
+      message: "product duplicated.",
+      result,
+    };
+  }
 
   // lets update the procuct.
   const data: Partial<TproductCreate> = payload.body;
+
+  if (data.price) data.price = Number(data.price);
+  if (data.inventoryCount) data.inventoryCount = Number(data.inventoryCount);
+  if (data.flashSale) data.flashSale = data.flashSale === "yes" ? true : false;
 
   const result = await prisma.product.update({
     where: {
@@ -117,34 +161,32 @@ const updateProduct = async (payload: Request) => {
   return result;
 };
 
-
 // coupne
-const createCoupne=async(payload:coupne)=>{
-  const result=await prisma.coupne.create({
-    data:payload
-  })
-  return result
-}
+const createCoupne = async (payload: coupne) => {
+  const result = await prisma.coupne.create({
+    data: payload,
+  });
+  return result;
+};
 
-const updateCoupne=async(payload:Request)=>{
-
-  const result=await prisma.coupne.update({
-    where:{
-      coupneId:payload.params.id
+const updateCoupne = async (payload: Request) => {
+  const result = await prisma.coupne.update({
+    where: {
+      coupneId: payload.params.id,
     },
-    data:payload.body
-  })
-  return {result,message:"coupne modified"}
-}
+    data: payload.body,
+  });
+  return { result, message: "coupne modified" };
+};
 
-const deleteCoupne=async(id:string)=>{
-  const result=await prisma.coupne.delete({
-    where:{
-      coupneId:id
-    }
-  })
-  return {result,message:"coupne deleted"}
-}
+const deleteCoupne = async (id: string) => {
+  const result = await prisma.coupne.delete({
+    where: {
+      coupneId: id,
+    },
+  });
+  return { result, message: "coupne deleted" };
+};
 
 const vendorService = {
   createStore,
@@ -152,6 +194,7 @@ const vendorService = {
   updateProduct,
   updateStore,
   createCoupne,
-  updateCoupne,deleteCoupne,
+  updateCoupne,
+  deleteCoupne,
 };
 export default vendorService;

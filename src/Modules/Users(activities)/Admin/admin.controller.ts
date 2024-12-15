@@ -18,6 +18,7 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
 
 // manate catetory.
 const manageCategory = catchAsync(async (req: Request, res: Response) => {
+ 
   const data = await adminService.manageCategory(req);
 
   sendResponse(res, {
@@ -44,7 +45,7 @@ const manageShop = catchAsync(async (req: Request, res: Response) => {
 
 // user/vendro manage.
 const manageUser=catchAsync(async (req: Request, res: Response) => {
-  const data = await adminService.manageShop(req);
+  const data = await adminService.manageuser(req);
 
   sendResponse(res, {
     data,

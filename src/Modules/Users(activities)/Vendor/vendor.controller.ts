@@ -30,7 +30,9 @@ const updateStore = catchAsync(async (req: Request, res: Response) => {
 
 // create product.
 const createProduct = catchAsync(async (req: Request, res: Response) => {
+  console.log("data created.")
   const data = await vendorService.createProduct(req.body);
+  console.log(data)
 
   sendResponse(res, {
     data,
@@ -39,6 +41,10 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     success: true,
   });
 });
+
+ 
+
+
 
 // update product.
 const updateProduct = catchAsync(async (req: Request, res: Response) => {

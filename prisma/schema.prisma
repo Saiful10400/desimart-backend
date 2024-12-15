@@ -16,21 +16,23 @@ datasource db {
 // user.
 
 model user {
-  userId   String @id @default(uuid())
-  email    String @unique
-  password String
-  role     roles
-  status   status @default(Active)
+  userId    String  @id @default(uuid())
+  email     String  @unique
+  password  String
+  role      roles
+  status    status  @default(Active)
+  isDeleted Boolean @default(false)
 
   buyer               buyer?
   vendor              vendor?
   admin               admin?
   followingStore      shopUser[]
   review              review[]
-  order               order[]
+  // order               order[]
   created             DateTime         @default(now())
   updated             DateTime         @updatedAt()
   recentProductsVisit recentProducts[]
+  order               order[]
 }
 
 // shopuser
@@ -95,6 +97,7 @@ model shop {
   shopId      String     @id @default(uuid())
   name        String
   status      status     @default(Active)
+  description String
   logo        String
   products    product[]
   vendorId    String     @unique
@@ -103,6 +106,7 @@ model shop {
   coupne      coupne[]
   created     DateTime   @default(now())
   updated     DateTime   @updatedAt()
+  order       order[]
 }
 
 model product {
@@ -115,13 +119,16 @@ model product {
   description         String
   shopId              String
   inventoryCount      Int
+  flashSale           Boolean          @default(false)
+  isDeleted           Boolean          @default(false)
   publishStatus       publishStatus
   shop                shop             @relation(fields: [shopId], references: [shopId])
   review              review[]
-  order               order[]
+  // order               order[]
   created             DateTime         @default(now())
   updated             DateTime         @updatedAt()
   recentProductsVisit recentProducts[]
+  productOrder        productOrder[]
 }
 
 model category {
@@ -133,29 +140,43 @@ model category {
 }
 
 model review {
-  reviewId  String   @id @default(uuid())
-  productId String
-  product   product  @relation(fields: [productId], references: [productId])
-  rating    Int
-  userId    String
-  user      user     @relation(fields: [userId], references: [userId])
-  created   DateTime @default(now())
-  updated   DateTime @updatedAt()
+  reviewId      String   @id @default(uuid())
+  productId     String
+  product       product  @relation(fields: [productId], references: [productId])
+  userMessage   String?
+  vendorMessage String?
+  userId        String
+  user          user     @relation(fields: [userId], references: [userId])
+  created       DateTime @default(now())
+  updated       DateTime @updatedAt()
 }
 
 model order {
-  orderId   String   @id @default(uuid())
-  productId String[]
-  product   product  @relation(fields: [productId], references: [productId])
-  userId    String
-  user      user     @relation(fields: [userId], references: [userId])
+  orderId String @id @default(uuid())
+
+  userId String
+  user   user   @relation(fields: [userId], references: [userId])
+
+  shopId String
+  shop   shop   @relation(fields: [shopId], references: [shopId])
 
   amount        Float
   paymentStatus paymentStatus @default(Unpaid)
-  transectionId String
+  transectionId String?
 
   created DateTime @default(now())
   updated DateTime @updatedAt()
+
+  productOrder productOrder[]
+}
+
+model productOrder {
+  porductId String
+  orderId   String
+  shop      product @relation(fields: [porductId], references: [productId])
+  order     order   @relation(fields: [orderId], references: [orderId])
+
+  @@id([porductId, orderId])
 }
 
 enum paymentStatus {

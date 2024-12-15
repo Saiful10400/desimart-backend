@@ -20,6 +20,9 @@ const signup = catchAsync(async (req: Request, res: Response) => {
 
 // 2. login a user.
 const login = catchAsync(async (req: Request, res: Response) => {
+  if (!req.body) {
+    throw new appError(401, "invalid email or password!");
+  }
   const result = await AuthenticationService.login(req.body);
 
   const { data, accessToken } = result;
@@ -92,9 +95,27 @@ const resetNewPassword = catchAsync(async (req: TRequest, res: Response) => {
   });
 });
 
+
+// 6. get logged in user.
+const getloggedInUser=catchAsync(async (req: TRequest, res: Response) => {
+
+  if(!req.user?.email){
+    throw new appError(401,"No email found")
+  }
+  const data=await AuthenticationService.getLoggedInuser(req.user?.email as string)
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "loggedin user fetched successfully",
+    success: true,
+  });
+});
+
 //  exporting the modules.
 const authenticationController = {
   signup,
+  getloggedInUser,
   login,
   chagePassword,
   restPassword,

@@ -14,6 +14,10 @@ router.post("/signup",multerUpload.upload.single("photo"),liveUrlSetter("photo")
 // login
 router.post("/login",authenticationController.login)
 
+
+// loggedIn user
+router.get("/loggedIn-user",auth([roles.User,roles.Admin,roles.Vendor]),authenticationController.getloggedInUser)
+
 // resetPass.
 router.post("/reset",authenticationController.restPassword) 
 

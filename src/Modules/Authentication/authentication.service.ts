@@ -78,7 +78,8 @@ const login = async (payload: { email: string; password: string }) => {
 
   // create jwt token.
   const jwtPayload = {
-    id: data.userId,
+    email: data.email,
+    status: data.status,
     role: data.role,
   };
   const accessToken = jwt.sign(jwtPayload, config.jwtSecret as string, {
@@ -129,17 +130,22 @@ const changePassword = async (payload: {
 //  4. reset password.
 
 const resetPassword = async (payload: { email: string }) => {
-  await prisma.user.findFirstOrThrow({
+  const user = await prisma.user.findFirstOrThrow({
     where: {
       email: payload.email,
     },
   });
+ 
 
-  const token = jwt.sign(payload, config.jwtSecret as string, {
-    expiresIn: "5m",
-  });
+  const token = jwt.sign(
+    { email: user.email, role: user.role, status: user.status },
+    config.jwtSecret as string,
+    {
+      expiresIn: "5m",
+    }
+  );
   const result = `${config.frontend_url}/reset-password?token=${token}`;
-  console.log(result);
+
   return sendMail(result, payload.email);
 };
 
@@ -159,13 +165,66 @@ const resetNewPassword = async (payload: {
   return result;
 };
 
+//getLogged in user.
+const getLoggedInuser = async (email: string) => {
+ 
+  const result = await prisma.user.findFirstOrThrow({
+    where: {
+      email,
+    },
+    select:{
+      admin:true,
+      followingStore:{select:{shopId:true}},
+      userId:true,
+      buyer:true,
+      email:true,
+      role:true,
+      order:{
+        select:{
+          productOrder:{
+            select:{
+              porductId:true
+            }
+          }
+        }
+      },
+      vendor:{
+        select:{
+          email:true,
+          isDeleted:true,
+          name:true,
+          photo:true,
+          vendorId:true,
+          shopId:{
+            select:{
+              name:true,
+              logo:true,
+              status:true,
+              shopId:true,
+              _count:{
+                select:{
+                  followersId:true,
+                  products:true,
+                  coupne:true
+                }
+              }
+            }
+          }
+
+        }
+      }
+    }
+  });
+  return result;
+};
+
 const AuthenticationService = {
   signup,
   login,
   changePassword,
   resetPassword,
   resetNewPassword,
-  // getCurrentUser
+  getLoggedInuser,
 };
 
 export default AuthenticationService;

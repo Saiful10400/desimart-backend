@@ -13,7 +13,7 @@ router.post("/manage-shop/:id",adminController.manageShop)
 
 
 // user/vendor manage.
-router.post("/manage-user/:id")
+router.post("/manage-user/:id",adminController.manageUser)
 
 
 

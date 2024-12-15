@@ -10,11 +10,11 @@ import prisma from "../config/prisma.config";
 
 export type TRequest = Request & { user?: {
   userId: string,
-  email:string ,
+  email:string , 
   password:string ,
   role:string ,
   status:string 
-}  };
+}  }; 
 
 
 const auth = (userRole: roles[]) => {
@@ -22,7 +22,7 @@ const auth = (userRole: roles[]) => {
     async (req: TRequest, res: Response, next: NextFunction) => {
      
       const token = req.headers.authorization
-      
+    
 
       // cheking if the token is available or not.
       if (!token)
@@ -31,7 +31,8 @@ const auth = (userRole: roles[]) => {
       // cheking if the token is valid
       const decoded = jwt.verify(token as string, config.jwtSecret as string) as JwtPayload &{role:roles,email:string,status:status};
 
-
+  
+ 
       if (!decoded?.role) 
         throw new appError(httpStatus.UNAUTHORIZED, "You are not authorized!(token modefied)");
       
@@ -44,8 +45,8 @@ const auth = (userRole: roles[]) => {
           status:decoded.status
         }
       });
-
-   
+ 
+  
 
       if (!user)
         throw new appError(httpStatus.UNAUTHORIZED, "You are not authorized!(user account not found)");
