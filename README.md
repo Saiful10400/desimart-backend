@@ -1,27 +1,25 @@
-# Acowork
 
-**Live URL**: [https://apollow-assignment-5-back-end.vercel.app/](https://apollow-assignment-5-back-end.vercel.app/)
 
 ## Overview
 
-The **Acowork** backend is the core of the co-working space platform, powering features such as real-time room availability, booking management, and secure payments. Built with scalability and performance in mind, the backend handles all data processing, storage, and API communication to ensure a seamless experience for users. It manages room information, user authentication, and booking transactions, allowing users to efficiently book and manage workspaces.
+This repository serves as the backend for our e-commerce platform, providing a secure, scalable, and efficient foundation to support all core functionalities. It powers essential features such as product management, user authentication, order processing, and payment handling through a well-structured RESTful API. Built with modern technologies and best practices, this backend ensures seamless communication with the frontend, enabling a smooth and reliable shopping experience for users.  
 
-## Features
 
-- **Real-time Availability:** Instantly check room availability and secure your space without delays.
-- **Instant Booking Confirmation:** Get immediate confirmation of your booking to avoid any last-minute hassles.
-- **Flexible Scheduling:** Book rooms by the hour, day, or for extended periods, tailored to your needs.
-- **Manage Bookings:** Easily view, update, reschedule, or cancel your bookings from a user-friendly dashboard.
-- **Secure Payments:** Enjoy safe and seamless transactions with multiple payment methods.
-- **Detailed Room Information:** View room features, amenities, and pricing before making a booking.
-- **24/7 Support:** Our customer service team is available around the clock to assist with any issues or questions.
+### Core Features
+- **Product Management:** Comprehensive CRUD operations for products, categories, and inventory.
+- **User Authentication:** Secure user registration, login, and role-based access control (RBAC).
+- **Order Processing:** Efficient order management, including cart handling, checkout, and order history.
+- **Payment Integration:** Supports secure payment processing through multiple payment gateways.
+- **Database Optimization:** Well-structured database models for efficient querying and data consistency.
+- **RESTful API:** Provides well-documented endpoints for seamless integration with the frontend.
+- **Error Handling:** Centralized error management for smooth and predictable API responses.
+- **Scalable Architecture:** Designed to accommodate future feature expansions and high traffic loads.
 
 ## Technology Used
 
 - **Node.js:** JavaScript runtime for scalable server-side applications.
 - **Express.js:** Lightweight web framework for building the API.
-- **MongoDB:** NoSQL database for storing room, user, and booking data.
-- **Mongoose:** Object Data Modeling (ODM) library for MongoDB to manage database operations.
+- **PostgreSQL**: Relational database for structured and reliable data management.  
 - **JWT:** Secure authentication and authorization.
 - **Amar Pay:** For handling secure payments.
 - **TypeScript:** Ensures type safety across the backend codebase.
@@ -31,7 +29,7 @@ The **Acowork** backend is the core of the co-working space platform, powering f
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/Saiful10400/Apollow-Assignment-5-back-end
+    git clone https://github.com/Saiful10400/Apollow-Assignment-9-back-end
     ```
 
 2. Navigate to the project directory:

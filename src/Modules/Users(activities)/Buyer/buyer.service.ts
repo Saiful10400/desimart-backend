@@ -68,10 +68,39 @@ const postReview=async(payload:Request)=>{
 }
 
 
+const answerReview=async(payload:Request)=>{
+
+  const result=await prisma.review.update({
+    where:{
+      reviewId:payload.params.id
+    },
+    data:{
+      vendorMessage:payload.body.message
+    }
+  })
+
+  return result
+
+}
+
+
+
+const getAllReview=async(id)=>{
+  const result=await prisma.review.findMany({
+    where:{
+      product:{
+        shopId:id
+      }
+    }
+  })
+  return result
+}
 
 const buyerService = {
   addRecent,
+  answerReview,
   getRecent,
-  postReview
+  postReview,
+  getAllReview
 };
 export default buyerService;

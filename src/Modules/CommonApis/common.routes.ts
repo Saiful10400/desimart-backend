@@ -22,6 +22,9 @@ router.post("/upload",multerUpload.upload.single("file"),liveUrlSetter("profileI
 // following shop.
 router.post("/product-following",commonController.followingProduct)
 
+// get category product.
+
+
 
 
 const commonRoutes=router

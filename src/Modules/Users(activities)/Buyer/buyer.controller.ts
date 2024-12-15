@@ -58,11 +58,40 @@ const postReview = catchAsync(async (req: Request, res: Response) => {
 
 
 
+const answerReview = catchAsync(async (req: Request, res: Response) => {
+  const data = await buyerService.answerReview(req);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "review posted",
+    success: true,
+  });
+});
+
+
+
+const getAllReview = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.params.id)
+  const data = await buyerService.getAllReview(req.params.id); 
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "review received",
+    success: true,
+  });
+});
+
+
+
 
 const buyerController = {
   addRecentProduct,
   getRecent,
-  postReview
+  postReview,
+  answerReview,
+  getAllReview
 };
 
 export default buyerController;
