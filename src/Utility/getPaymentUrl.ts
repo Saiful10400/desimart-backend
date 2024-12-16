@@ -16,9 +16,9 @@ const getPaymentUrl=async (cost:number,orderId:string) => {
       amount: cost,
       tran_id: transectionId,
       currency: "BDT",
-      success_url: `${process.env.BACK_END_URL}/api/order/order-postProcess/${orderId}?transectonId=${transectionId}`,
-      fail_url: `${process.env.BACK_END_URL}/api/order/order-postProcess/${orderId}?transectonId=${transectionId}`,
-      cancel_url: process.env.FRONT_END_URL,
+      success_url: `https://e-commerce9.vercel.app/api/order/order-postProcess/${orderId}?transectonId=${transectionId}`,
+      fail_url: `https://e-commerce9.vercel.app/api/order/order-postProcess/${orderId}?transectonId=${transectionId}`,
+      cancel_url: "https://funny-kleicha-6202f9.netlify.app/",
       desc: "Lend Money",
       type: "json",
     };

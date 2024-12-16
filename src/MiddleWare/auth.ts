@@ -52,7 +52,7 @@ const auth = (userRole: roles[]) => {
         throw new appError(httpStatus.UNAUTHORIZED, "You are not authorized!(user account not found)");
 
       if (!userRole.includes(user?.role) && userRole)
-        return res.send({
+         res.send({
           success: false,
           statusCode: 401,
           message: "You have no access to this route",

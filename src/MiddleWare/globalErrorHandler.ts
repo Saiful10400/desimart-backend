@@ -7,7 +7,8 @@ import { ZodError } from "zod";
 import zodErrorHandle from "../Errors/zodErrorHandle";
 import { JsonWebTokenError } from "jsonwebtoken";
 
-const globalErrorHandler:ErrorRequestHandler=(err,req,res)=>{
+
+const globalErrorHandler:ErrorRequestHandler=(err,req,res,next)=>{
 
     // setting initial value of error object property.
     let statusCode=500
@@ -42,8 +43,9 @@ const globalErrorHandler:ErrorRequestHandler=(err,req,res)=>{
         statusCode=400
         message=err.message
     }
+   
 
-    return res.status(statusCode).send({
+     res.status(500).send({
         success:false,
         message,
         errorMessages,
