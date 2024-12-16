@@ -2,7 +2,7 @@ import { Request } from "express";
 import prisma from "../../config/prisma.config";
 import getPaymentUrl from "../../Utility/getPaymentUrl";
 
-const createOrder = async (payload) => {};
+ 
 
 const createPaymentLInk = async (payload: Request) => {
   // create a order
@@ -19,7 +19,7 @@ const createPaymentLInk = async (payload: Request) => {
     const orderId = createAorder?.orderId;
 
     // create products on order.
-    const dataoforderandproduct = payload.body?.productsArr?.map((item) => ({
+    const dataoforderandproduct = payload.body?.productsArr?.map((item:string) => ({
       orderId: orderId,
       porductId: item,
     }));
@@ -37,7 +37,7 @@ const createPaymentLInk = async (payload: Request) => {
   return result;
 };
 
-const updatePaymentStatus = async (payload) => {
+const updatePaymentStatus = async (payload:{success:boolean,orderId:string,transectionId:string}) => {
   let result;
   if (payload.success) {
     result = await prisma.order.update({
@@ -140,7 +140,7 @@ const getallorders = async (payload: Request) => {
 };
 
 const orderService = {
-  createOrder,
+ 
   createPaymentLInk,
   updatePaymentStatus,
   getallorders,

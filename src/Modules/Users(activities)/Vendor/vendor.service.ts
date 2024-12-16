@@ -15,10 +15,24 @@ export interface TproductCreate {
   name: string;
   inventoryCount: number;
   price: number;
-  shopId: string;
-  categoryId: string;
   publishStatus: publishStatus;
+  flashSale: string 
 }
+
+
+
+type TcreateProduct = {
+  description: string;
+  image: string;
+  name: string;
+  price: string; // assuming price is passed as a string, convert to number
+  shopId: string; // assuming shopId is a string (UUID or similar)
+  inventoryCount: string; // assuming inventoryCount is passed as a string, convert to number
+  categoryId: string; // assuming categoryId is a string (UUID or similar)
+  publishStatus: publishStatus; // assuming publishStatus is a boolean value
+  flashSale: string; // "yes" or any other value
+};
+
 
 // create store.
 const createStore = async (payload: Tshop) => {
@@ -78,7 +92,7 @@ const updateStore = async (payload: Request) => {
 };
 
 // create product.
-const createProduct = async (payload: TproductCreate) => {
+const createProduct = async (payload:TcreateProduct) => {
   const result = await prisma.product.create({
     data: {
       description: payload.description,
@@ -145,11 +159,11 @@ const updateProduct = async (payload: Request) => {
   }
 
   // lets update the procuct.
-  const data: Partial<TproductCreate> = payload.body;
+  const data = payload.body;
 
   if (data.price) data.price = Number(data.price);
   if (data.inventoryCount) data.inventoryCount = Number(data.inventoryCount);
-  if (data.flashSale) data.flashSale = data.flashSale === "yes" ? true : false;
+  if (data.flashSale) data.flashSale = data.flashSale === "yes" ? true : false 
 
   const result = await prisma.product.update({
     where: {

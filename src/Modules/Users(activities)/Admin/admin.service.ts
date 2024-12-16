@@ -1,4 +1,4 @@
-import { status } from "@prisma/client";
+ 
 import prisma from "../../../config/prisma.config";
 import { Request } from "express";
 import appError from "../../../Errors/appError";

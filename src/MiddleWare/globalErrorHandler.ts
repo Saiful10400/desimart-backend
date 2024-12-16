@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prefer-const */
+ 
+ 
 import { ErrorRequestHandler } from "express";
 import { TerrorSource } from "../Errors/error.interface";
 import appError from "../Errors/appError";
@@ -7,7 +7,7 @@ import { ZodError } from "zod";
 import zodErrorHandle from "../Errors/zodErrorHandle";
 import { JsonWebTokenError } from "jsonwebtoken";
 
-const globalErrorHandler:ErrorRequestHandler=(err,req,res,next)=>{
+const globalErrorHandler:ErrorRequestHandler=(err,req,res)=>{
 
     // setting initial value of error object property.
     let statusCode=500

@@ -85,7 +85,7 @@ const answerReview=async(payload:Request)=>{
 
 
 
-const getAllReview=async(id)=>{
+const getAllReview=async(id:string)=>{
   const result=await prisma.review.findMany({
     where:{
       product:{

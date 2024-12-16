@@ -149,7 +149,7 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
 
   // category
   if (payload.category) {
-    condition.where?.AND?.push({
+    (condition.where as {AND:{categoryref:{name:string}}[]}).AND.push({
       categoryref: {
         name: payload.category,
       },
@@ -158,7 +158,7 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
 
   // search
   if (payload.search) {
-    condition.where?.AND?.push({
+    (condition.where as {AND:{OR:unknown[]}[]}).AND?.push({
       OR: [
         {
           name: {
@@ -181,7 +181,7 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     (payload.min || payload.min === 0) &&
     (payload.max || payload.max === 0)
   ) {
-    condition.where?.AND?.push({
+    (condition.where as {AND:{AND:unknown[]}[]}).AND?.push({
       AND: [
         {
           price: {
@@ -207,7 +207,6 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
 };
 
 const getSingleProduct = async (id: string) => {
- 
   const result = await prisma.product.findFirstOrThrow({
     where: {
       productId: id,
@@ -225,7 +224,7 @@ const getSingleProduct = async (id: string) => {
       flashSale: true,
       inventoryCount: true,
       price: true,
-      review:true,
+      review: true,
       _count: {
         select: {
           review: true,
@@ -276,21 +275,19 @@ const getStoreAllProducts = async (payload: Request) => {
   return { result, total };
 };
 
+const followingProduct = async (payload: Request) => {
+  const followingShop = payload.body;
 
-const followingProduct=async(payload:Request)=>{
+  const idarray: string[] = [];
+  followingShop?.followingStore?.map((item: { shopId: string }) =>
+    idarray.push(item.shopId)
+  );
 
-  const followingShop=payload.body
-  
-  const idarray=[]
-  followingShop?.followingStore?.map(item=>idarray.push(item.shopId))
-
-  
-
-  const result=prisma.product.findMany({
-    where:{
-      shopId:{
-        in:idarray
-      }
+  const result = prisma.product.findMany({
+    where: {
+      shopId: {
+        in: idarray,
+      },
     },
     select: {
       categoryref: {
@@ -308,12 +305,9 @@ const followingProduct=async(payload:Request)=>{
       shopId: true,
       flashSale: true,
     },
-  })
-  return result
-
-}
- 
-
+  });
+  return result;
+};
 
 const commonService = {
   getUsers,

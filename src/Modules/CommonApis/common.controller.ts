@@ -91,27 +91,13 @@ const followingProduct = catchAsync(async (req: Request, res: Response) => {
 });
  
 
-const upload = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body);
-
-  // const result=await cloudinary.uploader.upload(req.file.path,(er,result)=>{
-  //   // console.log({er,result})
-  // })
-
-  // sendResponse(res, {
-  //   data,
-  //   statusCode: httpStatus.OK,
-  //   message: "store fetched",
-  //   success: true,
-  // });
-});
+ 
 
 const commonController = {
   getUser,
   getStore,
   getCategory,
   getProducts,
-  upload,
   followingProduct,
   getStoreAllProducts,
 };
