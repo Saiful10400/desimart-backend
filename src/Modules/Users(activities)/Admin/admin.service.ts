@@ -1,22 +1,16 @@
  
 import prisma from "../../../config/prisma.config";
 import { Request } from "express";
-import appError from "../../../Errors/appError";
+ 
 
 // cteate category
-const createCategory = async (payload: { name: string }) => {
-  const isExist = await prisma.category.findFirst({
-    where: {
-      name: payload.name,
-    },
-  });
-  if (isExist) {
-    throw new appError(401, "Already tis category exist.");
-  }
-
+const createCategory = async (payload: { name: string,logo:string }) => {
+ 
+ 
   const result = await prisma.category.create({
     data: {
       name: payload.name,
+      logo:payload.logo
     },
   });
   return result;

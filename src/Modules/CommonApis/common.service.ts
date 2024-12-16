@@ -98,6 +98,7 @@ interface TgetProduct {
   min: number;
   max: number;
   category: string;
+  flashSale:string
 }
 
 const getProducts = async (payload: Partial<TgetProduct>) => {
@@ -153,6 +154,13 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
       categoryref: {
         name: payload.category,
       },
+    });
+  }
+
+  // flash sale
+  if (payload.flashSale) {
+    (condition.where as {AND:{flashSale:boolean}[]}).AND.push({
+      flashSale:payload.flashSale==="true"?true:false,
     });
   }
 

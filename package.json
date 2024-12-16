@@ -40,7 +40,8 @@
     "lint": "npx eslint src --ignore-pattern .ts",
     "lint:fix": "npx eslint dev --fix",
     "migrate": "npx prisma migrate dev",
-    "studio": "npx prisma studio"
+    "studio": "npx prisma studio",
+    "postinstall": "prisma generate"
   },
   "author": "",
   "license": "ISC",

@@ -1,10 +1,12 @@
 import { Router } from "express";
 import adminController from "./admin.controller";
+import multerUpload from "../../../MiddleWare/multerUpload";
+import liveUrlSetter from "../../../MiddleWare/LiveUrlSetter";
 
 const router=Router()
 
 
-router.post("/create-category",adminController.createCategory)
+router.post("/create-category",multerUpload.upload.single("logo"),liveUrlSetter("logo"),adminController.createCategory)
 
 router.post("/manage-category/:id",adminController.manageCategory)
 
