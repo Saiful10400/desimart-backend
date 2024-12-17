@@ -134,7 +134,7 @@ model product {
 model category {
   categoryId String    @id @default(uuid())
   name       String    @unique
-  logo       String    
+  logo       String
   productId  product[]
   created    DateTime  @default(now())
   updated    DateTime  @updatedAt()

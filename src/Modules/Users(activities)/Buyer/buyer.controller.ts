@@ -72,7 +72,7 @@ const answerReview = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAllReview = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.params.id)
+   
   const data = await buyerService.getAllReview(req.params.id); 
 
   sendResponse(res, {

@@ -30,9 +30,9 @@ const updateStore = catchAsync(async (req: Request, res: Response) => {
 
 // create product.
 const createProduct = catchAsync(async (req: Request, res: Response) => {
-  console.log("data created.")
+  
   const data = await vendorService.createProduct(req.body);
-  console.log(data)
+ 
 
   sendResponse(res, {
     data,
@@ -86,6 +86,18 @@ const updateCoupne = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getCoupnewithShop = catchAsync(async (req: Request, res: Response) => {
+  
+  const data= await vendorService.getAllCoupne(req.params.id)
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "coupne getted successfully",
+    success: true,
+  });
+});
+
 const vendorController = {
   createProduct,
   createStore,
@@ -93,6 +105,7 @@ const vendorController = {
   updateStore,
   createCoupne,
   updateCoupne,
+  getCoupnewithShop
 };
 
 export default vendorController;

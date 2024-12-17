@@ -26,6 +26,9 @@ router.post("/create-coupne",vendorController.createCoupne)
 
 // manage coupne
 router.post("/manage-coupne/:id",vendorController.updateCoupne)
+
+
+router.get("/get-shopsAllCoupne/:id",vendorController.getCoupnewithShop)
  
 
 

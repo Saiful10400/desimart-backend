@@ -177,8 +177,15 @@ const updateProduct = async (payload: Request) => {
 
 // coupne
 const createCoupne = async (payload: coupne) => {
+  
   const result = await prisma.coupne.create({
-    data: payload,
+    data: {
+      code:payload.code,
+      discount:payload.discount,
+      untill:"2024-12-17T15:21:04+00:00",
+      minimumExpence:payload.minimumExpence,
+      shopId:payload.shopId
+    },
   });
   return result;
 };
@@ -202,8 +209,23 @@ const deleteCoupne = async (id: string) => {
   return { result, message: "coupne deleted" };
 };
 
+
+const getAllCoupne=async(id:string)=>{
+ 
+  const result=await prisma.coupne.findMany({
+    where:{
+      shopId:id
+    }
+  })
+ 
+  return result
+}
+
+
+
 const vendorService = {
   createStore,
+  getAllCoupne,
   createProduct,
   updateProduct,
   updateStore,

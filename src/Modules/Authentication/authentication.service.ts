@@ -179,6 +179,7 @@ const getLoggedInuser = async (email: string) => {
       buyer:true,
       email:true,
       role:true,
+      status:true,
       order:{
         select:{
           productOrder:{

@@ -98,13 +98,16 @@ interface TgetProduct {
   min: number;
   max: number;
   category: string;
-  flashSale:string
+  flashSale:string;
+  not:string;
+  shopFollower:string;
+  exactTotal:"true" | "false"
 }
 
 const getProducts = async (payload: Partial<TgetProduct>) => {
   let condition: Prisma.productFindManyArgs = {
     where: {
-      AND: [],
+      AND: [{shop:{status:"Active"}}],
     },
     select: {
       image: true,
@@ -129,6 +132,11 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     },
   };
 
+ 
+
+ 
+
+
   if (Object.keys(payload).length === 0) {
     condition = { select: condition.select };
   }
@@ -144,7 +152,7 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     const { limit, offset, ...rest } = payload;
 
     if (Object.keys(rest).length === 0) {
-      condition.where = {};
+      condition.where = {shop:{status:"Active"}};
     }
   }
 
@@ -156,6 +164,48 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
       },
     });
   }
+
+  // without this id.
+  if (payload.not) {
+    (condition.where as {AND:unknown[]}).AND.push({productId:{not:payload.not}});
+  }
+
+
+  
+
+//   // without this id.
+//   if (payload.shopFollower) {
+//     // (condition.where as {AND:unknown[]}).AND.push({productId:{not:payload.not}});
+
+//     const followingShopQuery=await prisma.shopUser.findMany({
+//       where:{
+//         userId:payload.shopFollower
+//       },
+//       select:{shopId:true}
+//     })
+
+//     if(followingShopQuery.length>0){
+
+
+  
+ 
+// const followingShop=followingShopQuery.map(item=>item.shopId)
+
+// orderQuery=[{
+//   shopId: {
+//     in: followingShop,
+//   },
+// },...orderQuery]
+
+//   }
+
+// console.log(orderQuery)
+
+//   }
+
+
+
+
 
   // flash sale
   if (payload.flashSale) {
@@ -209,7 +259,13 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     ...condition,
     orderBy: { created: "desc" },
   });
-  const count = await prisma.product.count();
+  let count
+
+  if(payload.exactTotal==="true"){
+    count= await prisma.product.count({where:{...condition.where}});
+  } else{
+    count= await prisma.product.count({where:{shop:{status:"Active"}}});
+  }
 
   return { total: count, result };
 };
@@ -246,7 +302,7 @@ const getSingleProduct = async (id: string) => {
 };
 
 const getStoreAllProducts = async (payload: Request) => {
-  console.log(payload.params);
+  
   const result = await prisma.product.findMany({
     where: {
       shopId: payload.params.id,

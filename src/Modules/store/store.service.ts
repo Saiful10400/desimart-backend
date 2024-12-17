@@ -3,7 +3,7 @@ import prisma from "../../config/prisma.config"
 import { Request } from "express"
 
 const manageFollow=async(payload:shopUser)=>{
-    console.log(payload)
+     
 
 // find follow
 const isExist=await prisma.shopUser.findFirst({
