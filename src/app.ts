@@ -9,7 +9,7 @@ import globalErrorHandler from "./MiddleWare/globalErrorHandler";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: ["https://funny-kleicha-6202f9.netlify.app","http://localhost:5173"], credentials: true }));
+app.use(cors({ origin: ["https://deshimart10400.vercel.app","http://localhost:5173"], credentials: true }));
 
 
 app.get("/",(req:Request,res:Response)=>{
