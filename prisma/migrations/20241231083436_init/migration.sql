@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE "admin" ALTER COLUMN "photo" DROP NOT NULL,
+ALTER COLUMN "photo" SET DEFAULT '';
+
+-- AlterTable
+ALTER TABLE "buyer" ALTER COLUMN "photo" DROP NOT NULL,
+ALTER COLUMN "photo" SET DEFAULT '';
+
+-- AlterTable
+ALTER TABLE "vendor" ALTER COLUMN "photo" DROP NOT NULL,
+ALTER COLUMN "photo" SET DEFAULT '';

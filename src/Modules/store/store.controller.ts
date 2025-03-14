@@ -27,10 +27,23 @@ const checkCoupon=catchAsync(async (req: Request, res: Response) => {
   });
 
 
+const getAllStore=catchAsync(async (req: Request, res: Response) => {
+    const data = await storeService.getAllStore(req.query)
+  
+    sendResponse(res, {
+      data,
+      statusCode: httpStatus.OK,
+      message: "all store retrieved.",
+      success: true,
+    });
+  });
+
+
 
   const storeController={
     createFollow,
-    checkCoupon
+    checkCoupon,
+    getAllStore
   }
 
   export default storeController

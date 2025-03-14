@@ -11,7 +11,7 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     data,
     statusCode: httpStatus.OK,
-    message: "Caegory crated successfully",
+    message: "Category crated successfully",
     success: true,
   });
 });
@@ -55,13 +55,63 @@ const manageUser=catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// create brand.
+const createBrand = catchAsync(async (req: Request, res: Response) => {
+  const data = await adminService.createBrand(req.body);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "New Brand Created Successfully",
+    success: true,
+  });
+});
+
+// get brand.
+const getBrand = catchAsync(async (req: Request, res: Response) => {
+  const data = await adminService.getBrand(req.query);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "New Brand Created Successfully",
+    success: true,
+  });
+});
+
+// create banner.
+const createBanner = catchAsync(async (req: Request, res: Response) => {
+  const data = await adminService.createBanner(req.body);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "New banner crated successfully",
+    success: true,
+  });
+});
+// create banners.
+const getBanners = catchAsync(async (req: Request, res: Response) => {
+  const data = await adminService.getBanners(req.query);
+
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "New banner crated successfully",
+    success: true,
+  });
+});
 
 
 const adminController = {
   createCategory,
   manageCategory,
   manageShop,
-  manageUser
+  manageUser,
+  createBrand,
+  getBrand,
+  createBanner,
+  getBanners
 };
 
 export default adminController;

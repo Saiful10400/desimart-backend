@@ -3,6 +3,7 @@
 import { Prisma, roles } from "@prisma/client";
 import prisma from "../../config/prisma.config";
 import { Request } from "express";
+import { TpaginationPayload } from "../Users(activities)/Admin/admin.service";
 
 const getUsers = async (offset: number = 10, limit: number) => {
   const count = await prisma.user.count({
@@ -23,8 +24,8 @@ const getUsers = async (offset: number = 10, limit: number) => {
     orderBy: {
       userId: "asc",
     },
-    take: limit || 10,
-    skip: offset,
+    take: Number(limit) || 10,
+    skip: Number(offset) || 0,
     select: {
       buyer: true,
       vendor: true,
@@ -32,12 +33,13 @@ const getUsers = async (offset: number = 10, limit: number) => {
       email: true,
       userId: true,
       status: true,
+      created:true
     },
   };
   // if ((limit || limit === 0) && (offset || offset === 0)) {
   //   condition = { ...condition, take: 2, skip: 0 };
   // }
-  console.log({ limit, offset });
+  
   const result = await prisma.user.findMany(condition);
 
   return { total: count, result };
@@ -86,9 +88,38 @@ const getSingleShop = async (id: string) => {
   return result;
 };
 
-const getCatetory = async () => {
-  const result = await prisma.category.findMany();
-  return result;
+const getCatetory = async (payload: Partial<TpaginationPayload>) => {
+  const condition: Prisma.categoryFindManyArgs = {
+    orderBy: { created: "desc" },
+    select:{
+      _count:{select:{productId:true}},
+      categoryId:true,
+      logo:true,
+      name:true,
+      slug:true,
+      created:true,
+      updated:true
+    }
+  };
+
+  // pagination
+  if (
+    (payload.limit || payload.limit === 0) &&
+    (payload.offset || payload.offset === 0)
+  ) {
+    condition.skip = Number(payload.offset);
+    condition.take = Number(payload.limit);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { limit, offset, ...rest } = payload;
+
+    if (Object.keys(rest).length === 0) {
+      condition.where = {};
+    }
+  }
+
+  const result = await prisma.category.findMany({ ...condition });
+  const total = await prisma.category.count();
+  return { result, total };
 };
 
 interface TgetProduct {
@@ -98,21 +129,23 @@ interface TgetProduct {
   min: number;
   max: number;
   category: string;
-  flashSale:string;
-  not:string;
-  shopFollower:string;
-  exactTotal:"true" | "false"
+  flashSale: string;
+  not: string;
+  shopFollower: string;
+  exactTotal: "true" | "false";
 }
 
 const getProducts = async (payload: Partial<TgetProduct>) => {
   let condition: Prisma.productFindManyArgs = {
     where: {
-      AND: [{shop:{status:"Active"}}],
+      AND: [{ shop: { status: "Active" } }],
     },
     select: {
       image: true,
       name: true,
       productId: true,
+      slug:true,
+      updated:true,
       categoryref: {
         select: {
           name: true,
@@ -122,6 +155,15 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
       flashSale: true,
       inventoryCount: true,
       price: true,
+    discount:true,
+      brand:{
+        select:{
+          name:true,
+          logo:true,
+          brandId:true,
+          slug:true,
+        }
+      },
       _count: {
         select: {
           review: true,
@@ -131,11 +173,6 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
       shop: { select: { name: true, logo: true, shopId: true } },
     },
   };
-
- 
-
- 
-
 
   if (Object.keys(payload).length === 0) {
     condition = { select: condition.select };
@@ -152,13 +189,13 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     const { limit, offset, ...rest } = payload;
 
     if (Object.keys(rest).length === 0) {
-      condition.where = {shop:{status:"Active"}};
+      condition.where = { shop: { status: "Active" } };
     }
   }
 
   // category
   if (payload.category) {
-    (condition.where as {AND:{categoryref:{name:string}}[]}).AND.push({
+    (condition.where as { AND: { categoryref: { name: string } }[] }).AND.push({
       categoryref: {
         name: payload.category,
       },
@@ -167,56 +204,48 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
 
   // without this id.
   if (payload.not) {
-    (condition.where as {AND:unknown[]}).AND.push({productId:{not:payload.not}});
+    (condition.where as { AND: unknown[] }).AND.push({
+      productId: { not: payload.not },
+    });
   }
 
+  //   // without this id.
+  //   if (payload.shopFollower) {
+  //     // (condition.where as {AND:unknown[]}).AND.push({productId:{not:payload.not}});
 
-  
+  //     const followingShopQuery=await prisma.shopUser.findMany({
+  //       where:{
+  //         userId:payload.shopFollower
+  //       },
+  //       select:{shopId:true}
+  //     })
 
-//   // without this id.
-//   if (payload.shopFollower) {
-//     // (condition.where as {AND:unknown[]}).AND.push({productId:{not:payload.not}});
+  //     if(followingShopQuery.length>0){
 
-//     const followingShopQuery=await prisma.shopUser.findMany({
-//       where:{
-//         userId:payload.shopFollower
-//       },
-//       select:{shopId:true}
-//     })
+  // const followingShop=followingShopQuery.map(item=>item.shopId)
 
-//     if(followingShopQuery.length>0){
+  // orderQuery=[{
+  //   shopId: {
+  //     in: followingShop,
+  //   },
+  // },...orderQuery]
 
+  //   }
 
-  
- 
-// const followingShop=followingShopQuery.map(item=>item.shopId)
+  // console.log(orderQuery)
 
-// orderQuery=[{
-//   shopId: {
-//     in: followingShop,
-//   },
-// },...orderQuery]
-
-//   }
-
-// console.log(orderQuery)
-
-//   }
-
-
-
-
+  //   }
 
   // flash sale
   if (payload.flashSale) {
-    (condition.where as {AND:{flashSale:boolean}[]}).AND.push({
-      flashSale:payload.flashSale==="true"?true:false,
+    (condition.where as { AND: { flashSale: boolean }[] }).AND.push({
+      flashSale: payload.flashSale === "true" ? true : false,
     });
   }
 
   // search
   if (payload.search) {
-    (condition.where as {AND:{OR:unknown[]}[]}).AND?.push({
+    (condition.where as { AND: { OR: unknown[] }[] }).AND?.push({
       OR: [
         {
           name: {
@@ -239,7 +268,7 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     (payload.min || payload.min === 0) &&
     (payload.max || payload.max === 0)
   ) {
-    (condition.where as {AND:{AND:unknown[]}[]}).AND?.push({
+    (condition.where as { AND: { AND: unknown[] }[] }).AND?.push({
       AND: [
         {
           price: {
@@ -259,21 +288,23 @@ const getProducts = async (payload: Partial<TgetProduct>) => {
     ...condition,
     orderBy: { created: "desc" },
   });
-  let count
+  let count;
 
-  if(payload.exactTotal==="true"){
-    count= await prisma.product.count({where:{...condition.where}});
-  } else{
-    count= await prisma.product.count({where:{shop:{status:"Active"}}});
+  if (payload.exactTotal === "true") {
+    count = await prisma.product.count({ where: { ...condition.where } });
+  } else {
+    count = await prisma.product.count({
+      where: { shop: { status: "Active" } },
+    });
   }
 
   return { total: count, result };
 };
 
-const getSingleProduct = async (id: string) => {
+const getSingleProduct = async (slug: string) => {
   const result = await prisma.product.findFirstOrThrow({
     where: {
-      productId: id,
+      slug: slug,
     },
     select: {
       image: true,
@@ -302,7 +333,6 @@ const getSingleProduct = async (id: string) => {
 };
 
 const getStoreAllProducts = async (payload: Request) => {
-  
   const result = await prisma.product.findMany({
     where: {
       shopId: payload.params.id,
@@ -316,6 +346,7 @@ const getStoreAllProducts = async (payload: Request) => {
       description: true,
       name: true,
       price: true,
+      discount:true,
       publishStatus: true,
       review: true,
       inventoryCount: true,
@@ -323,6 +354,8 @@ const getStoreAllProducts = async (payload: Request) => {
       productId: true,
       shopId: true,
       flashSale: true,
+      created:true,
+      updated:true
     },
     skip: Number(payload.query.offset),
     take: Number(payload.query.limit),

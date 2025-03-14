@@ -39,7 +39,7 @@ const getStore = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getCategory = catchAsync(async (req: Request, res: Response) => {
-  const data = await commonService.getCatetory();
+  const data = await commonService.getCatetory(req.query);
 
   sendResponse(res, {
     data,

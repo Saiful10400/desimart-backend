@@ -16,26 +16,26 @@ export interface TproductCreate {
   inventoryCount: number;
   price: number;
   publishStatus: publishStatus;
-  flashSale: string 
+  flashSale: string;
 }
-
-
 
 type TcreateProduct = {
   description: string;
   image: string;
   name: string;
-  price: string; // assuming price is passed as a string, convert to number
+  price: number; // assuming price is passed as a string, convert to number
   shopId: string; // assuming shopId is a string (UUID or similar)
-  inventoryCount: string; // assuming inventoryCount is passed as a string, convert to number
+  inventoryCount: number; // assuming inventoryCount is passed as a string, convert to number
   categoryId: string; // assuming categoryId is a string (UUID or similar)
-  publishStatus: publishStatus; // assuming publishStatus is a boolean value
-  flashSale: string; // "yes" or any other value
+  flashSale: boolean; // "yes" or any other value
+  brandId: string;
+  slug: string;
+  discount: number;
 };
-
 
 // create store.
 const createStore = async (payload: Tshop) => {
+  console.log(payload)
   const result = await prisma.shop.create({
     data: {
       logo: payload.logo,
@@ -78,7 +78,9 @@ const updateStore = async (payload: Request) => {
   let data: Partial<Tshop> = payload.body;
 
   if (data.logo === "undefined") {
-    data = { name: data.name, description: data.description };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { logo, ...rest } = data;
+    data = { ...rest };
   }
 
   const result = await prisma.shop.update({
@@ -92,19 +94,11 @@ const updateStore = async (payload: Request) => {
 };
 
 // create product.
-const createProduct = async (payload:TcreateProduct) => {
+const createProduct = async (payload: TcreateProduct) => {
+
+  
   const result = await prisma.product.create({
-    data: {
-      description: payload.description,
-      image: payload.image,
-      name: payload.name,
-      price: Number(payload.price),
-      shopId: payload.shopId,
-      inventoryCount: Number(payload.inventoryCount),
-      categoryId: payload.categoryId,
-      publishStatus: payload.publishStatus,
-      flashSale: payload.flashSale === "yes" ? true : false,
-    },
+    data: payload,
   });
 
   return result;
@@ -149,6 +143,8 @@ const updateProduct = async (payload: Request) => {
         shopId: currentProduct?.shopId,
         categoryId: currentProduct.categoryId,
         flashSale: currentProduct.flashSale,
+        brandId:currentProduct.brandId,
+        slug:currentProduct.slug,
       },
     });
     return {
@@ -163,7 +159,7 @@ const updateProduct = async (payload: Request) => {
 
   if (data.price) data.price = Number(data.price);
   if (data.inventoryCount) data.inventoryCount = Number(data.inventoryCount);
-  if (data.flashSale) data.flashSale = data.flashSale === "yes" ? true : false 
+  if (data.flashSale) data.flashSale = data.flashSale === "yes" ? true : false;
 
   const result = await prisma.product.update({
     where: {
@@ -177,14 +173,13 @@ const updateProduct = async (payload: Request) => {
 
 // coupne
 const createCoupne = async (payload: coupne) => {
-  
   const result = await prisma.coupne.create({
     data: {
-      code:payload.code,
-      discount:payload.discount,
-      untill:"2024-12-17T15:21:04+00:00",
-      minimumExpence:payload.minimumExpence,
-      shopId:payload.shopId
+      code: payload.code,
+      discount: payload.discount,
+      untill: "2024-12-17T15:21:04+00:00",
+      minimumExpence: payload.minimumExpence,
+      shopId: payload.shopId,
     },
   });
   return result;
@@ -209,19 +204,15 @@ const deleteCoupne = async (id: string) => {
   return { result, message: "coupne deleted" };
 };
 
+const getAllCoupne = async (id: string) => {
+  const result = await prisma.coupne.findMany({
+    where: {
+      shopId: id,
+    },
+  });
 
-const getAllCoupne=async(id:string)=>{
- 
-  const result=await prisma.coupne.findMany({
-    where:{
-      shopId:id
-    }
-  })
- 
-  return result
-}
-
-
+  return result;
+};
 
 const vendorService = {
   createStore,

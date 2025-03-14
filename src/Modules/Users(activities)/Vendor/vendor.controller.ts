@@ -30,8 +30,13 @@ const updateStore = catchAsync(async (req: Request, res: Response) => {
 
 // create product.
 const createProduct = catchAsync(async (req: Request, res: Response) => {
-  
-  const data = await vendorService.createProduct(req.body);
+const payload={...req.body}
+payload.inventoryCount = Number(payload.inventoryCount);
+payload.price = Number(payload.price);
+payload.discount = Number(payload.discount);
+payload.flashSale=payload.flashSale=="true"?true:false
+payload.carouselImages=payload?.carouselImages?.split("'")[0]?.split(",")
+  const data = await vendorService.createProduct(payload);
  
 
   sendResponse(res, {

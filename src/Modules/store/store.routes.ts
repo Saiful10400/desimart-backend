@@ -8,6 +8,8 @@ const router=Router()
 router.post("/manage-follow",storeController.createFollow)
 router.post("/check-coupon/:id",storeController.checkCoupon)
 
+// get all stores.
+router.get("/all-store",storeController.getAllStore)
 
 
 

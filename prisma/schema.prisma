@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = "postgresql://ecommecre_user:ymkJs57WAkXqiqt65BcVGoOqMS1hqSRa@dpg-ctff5m1u0jms739m97ug-a.oregon-postgres.render.com/ecommecre"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // user.
@@ -55,7 +56,7 @@ model buyer {
   status    status   @default(Active)
   email     String
   name      String
-  photo     String
+  photo     String?  @default("")
   isDeleted Boolean  @default(false)
   created   DateTime @default(now())
   updated   DateTime @updatedAt()
@@ -68,7 +69,7 @@ model vendor {
   status    status  @default(Active)
   email     String
   name      String
-  photo     String
+  photo     String? @default("")
   isDeleted Boolean @default(false)
 
   // shop relation.
@@ -84,7 +85,7 @@ model admin {
   status    status   @default(Active)
   email     String
   name      String
-  photo     String
+  photo     String?  @default("")
   isDeleted Boolean  @default(false)
   created   DateTime @default(now())
   updated   DateTime @updatedAt()
@@ -115,16 +116,21 @@ model product {
   price               Float
   categoryId          String
   categoryref         category         @relation(fields: [categoryId], references: [categoryId])
+  brandId             String
+  brand               brand            @relation(fields: [brandId], references: [brandId])
   image               String
+  carouselImages      String[]
   description         String
   shopId              String
   inventoryCount      Int
   flashSale           Boolean          @default(false)
+  discount            Int              @default(0)
   isDeleted           Boolean          @default(false)
-  publishStatus       publishStatus
+  publishStatus       publishStatus    @default(Publick)
   shop                shop             @relation(fields: [shopId], references: [shopId])
   review              review[]
   // order               order[]
+  slug                String           @unique()
   created             DateTime         @default(now())
   updated             DateTime         @updatedAt()
   recentProductsVisit recentProducts[]
@@ -135,6 +141,7 @@ model category {
   categoryId String    @id @default(uuid())
   name       String    @unique
   logo       String
+  slug       String    @unique
   productId  product[]
   created    DateTime  @default(now())
   updated    DateTime  @updatedAt()
@@ -205,6 +212,18 @@ model recentProducts {
   created DateTime @default(now())
 }
 
+// brand.
+model brand {
+  brandId String @id @default(uuid())
+  name    String @unique
+  slug    String @unique
+  logo    String
+
+  created DateTime  @default(now())
+  updated DateTime  @updatedAt()
+  product product[]
+}
+
 // enums
 enum roles {
   Admin
@@ -220,4 +239,12 @@ enum status {
 enum publishStatus {
   Publick
   Private
+}
+
+model banner {
+  bannerId  String @id @default(uuid())
+  bannerUrl String
+  route     String?
+  created DateTime  @default(now())
+  updated DateTime  @updatedAt()
 }
