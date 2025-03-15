@@ -19,9 +19,9 @@ router.get("/store-products/:id",commonController.getStoreAllProducts)
 // following shop.
 router.post("/product-following",commonController.followingProduct)
 
-// get category product.
+// search api.
 
-
+router.get("/products/search",commonController.searchProducts)
 
 
 const commonRoutes=router

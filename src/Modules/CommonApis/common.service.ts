@@ -406,6 +406,101 @@ const followingProduct = async (payload: Request) => {
   return result;
 };
 
+interface tProductSearchPayload {
+  searchText: string | undefined;
+  brand: string | undefined;
+  category: string | undefined;
+  priceRange: string | undefined;
+  shop: string | undefined;
+  flashSale: string | undefined;
+}
+
+
+const searchProduct = async (offset: number, limit: number,searchPayload:Partial<tProductSearchPayload>) => {
+  const count = await prisma.shop.count();
+let whereCondition:Prisma.productWhereInput={}
+  let condition: Prisma.productFindManyArgs = {where:whereCondition };
+  if ((limit || limit === 0) && (offset || offset === 0)) {
+    condition = { ...condition, skip: offset, take: limit};
+  }
+  
+
+  // applying condition according to search payload.
+
+  if(searchPayload.searchText){
+const condition1:Prisma.productWhereInput={description:{contains:searchPayload.searchText,mode:"insensitive"}}
+const condition2:Prisma.productWhereInput={name:{contains:searchPayload.searchText,mode:"insensitive"}}
+whereCondition.OR=[condition1,condition2]
+  }  
+
+  if(searchPayload.brand){
+    const brands=searchPayload.brand.split(",")
+    const queryConditons:Prisma.brandWhereInput[]=brands.map((text) => ({name: {
+      contains: text,
+      mode: 'insensitive',  
+    }}))
+    whereCondition={...whereCondition,brand:{OR:queryConditons}}
+    condition={...condition,where:whereCondition}
+    
+  }
+  
+  if(searchPayload.category){
+    const brands=searchPayload.category.split(",")
+    const queryConditons:Prisma.categoryWhereInput[]=brands.map((text) => ({name: {
+      contains: text,
+      mode: 'insensitive',  
+    }}))
+    whereCondition={...whereCondition,categoryref:{OR:queryConditons}}
+    condition={...condition,where:whereCondition}
+    
+  } 
+
+  if(searchPayload.shop){
+    const brands=searchPayload.shop.split(",")
+    const queryConditons:Prisma.shopWhereInput[]=brands.map((text) => ({name: {
+      contains: text,
+      mode: 'insensitive',  
+    }}))
+    whereCondition={...whereCondition,shop:{OR:queryConditons}}
+    condition={...condition,where:whereCondition}
+    
+  } 
+
+  if(searchPayload.flashSale==="true"){
+     
+    whereCondition.flashSale={equals:true}
+    
+  } 
+
+  if(searchPayload.flashSale==="false"){
+     
+    whereCondition.flashSale={equals:false}
+    
+  } 
+
+  if(searchPayload.flashSale==="false_true"){
+
+    whereCondition.OR=whereCondition.OR?[...whereCondition.OR,{flashSale:{equals:true}},{flashSale:{equals:false}}]:[{flashSale:{equals:true}},{flashSale:{equals:false}}]
+    
+  } 
+
+  if(searchPayload.priceRange){
+const prices=searchPayload.priceRange.split("-")
+const condition1:Prisma.productWhereInput={price:{gte:Number(prices[0]) }}
+const condition2:Prisma.productWhereInput={price:{lte:Number(prices[1]) }}
+whereCondition.AND=[condition1,condition2]
+  } 
+ 
+
+  const result = await prisma.product.findMany(condition);
+
+  return { total: count, result };
+};
+
+
+
+
+
 const commonService = {
   getUsers,
   followingProduct,
@@ -415,5 +510,6 @@ const commonService = {
   getCatetory,
   getProducts,
   getSingleShop,
+  searchProduct
 };
 export default commonService;

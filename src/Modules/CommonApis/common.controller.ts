@@ -77,8 +77,6 @@ const getStoreAllProducts = catchAsync(async (req: Request, res: Response) => {
   });
 });
  
-
-
 const followingProduct = catchAsync(async (req: Request, res: Response) => {
   const data = await commonService.followingProduct(req);
 
@@ -90,7 +88,25 @@ const followingProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
  
+const searchProducts = catchAsync(async (req: Request, res: Response) => {
+ 
+ 
+  
+ 
+   const data = await commonService.searchProduct(
+      Number(req.query.offset),
+      Number(req.query.limit),
+      req.query
+    );
+ 
 
+  sendResponse(res, {
+    data,
+    statusCode: httpStatus.OK,
+    message: "searched product retrieved.",
+    success: true,
+  });
+});
  
 
 const commonController = {
@@ -100,6 +116,7 @@ const commonController = {
   getProducts,
   followingProduct,
   getStoreAllProducts,
+  searchProducts
 };
 
 export default commonController;

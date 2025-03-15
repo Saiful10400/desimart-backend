@@ -45,13 +45,15 @@ const globalErrorHandler:ErrorRequestHandler=(err,req,res,next)=>{
     }
    
 
-     res.status(500).send({
+     res.status(statusCode).send({
         success:false,
         message,
         errorMessages,
         // err,
         stack:err?.stack||null
     })
+    return
+    next()
 }
 
 export default globalErrorHandler
