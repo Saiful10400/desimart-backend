@@ -3,12 +3,16 @@ import prisma from "../../../config/prisma.config";
 import { Request } from "express";
 
 // cteate category
-const createCategory = async (payload: { name: string; logo: string,slug:string }) => {
+const createCategory = async (payload: {
+  name: string;
+  logo: string;
+  slug: string;
+}) => {
   const result = await prisma.category.create({
     data: {
       name: payload.name,
       logo: payload.logo,
-      slug:payload.slug
+      slug: payload.slug,
     },
   });
   return result;
@@ -97,7 +101,20 @@ export interface TpaginationPayload {
 }
 
 const getBrand = async (payload: Partial<TpaginationPayload>) => {
-  const condition: Prisma.brandFindManyArgs = { orderBy:{created:"desc"}};
+  const condition: Prisma.brandFindManyArgs = {
+    orderBy: { created: "desc" },
+    select:{
+      brandId:true,
+      logo:true,
+      slug:true,
+      created:true,
+      updated:true,
+      name:true,
+      _count:{
+        select:{product:true}
+      }
+    }
+  };
 
   // pagination
   if (
@@ -115,19 +132,19 @@ const getBrand = async (payload: Partial<TpaginationPayload>) => {
   }
 
   const result = await prisma.brand.findMany({ ...condition });
-  const total=await prisma.brand.count()
-  return {result,total};
+  const total = await prisma.brand.count();
+  return { result, total };
 };
 
-const createBanner=async(payload:Prisma.bannerCreateInput)=>{
-  const result =await prisma.banner.create({
-    data:payload
-  })
-  return result
-}
+const createBanner = async (payload: Prisma.bannerCreateInput) => {
+  const result = await prisma.banner.create({
+    data: payload,
+  });
+  return result;
+};
 
-const getBanners=async(payload: Partial<TpaginationPayload>)=>{
-  const condition: Prisma.bannerFindManyArgs = { orderBy:{created:"desc"}};
+const getBanners = async (payload: Partial<TpaginationPayload>) => {
+  const condition: Prisma.bannerFindManyArgs = { orderBy: { created: "desc" } };
 
   // pagination
   if (
@@ -145,9 +162,9 @@ const getBanners=async(payload: Partial<TpaginationPayload>)=>{
   }
 
   const result = await prisma.banner.findMany({ ...condition });
-  const total=await prisma.banner.count()
-  return {result,total};
-}
+  const total = await prisma.banner.count();
+  return { result, total };
+};
 
 const adminService = {
   createCategory,
@@ -157,6 +174,6 @@ const adminService = {
   createBrand,
   getBrand,
   createBanner,
-  getBanners
+  getBanners,
 };
 export default adminService;
