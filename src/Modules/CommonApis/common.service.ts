@@ -418,7 +418,9 @@ interface tProductSearchPayload {
 
 const searchProduct = async (offset: number, limit: number,searchPayload:Partial<tProductSearchPayload>) => {
   const count = await prisma.shop.count();
-let whereCondition:Prisma.productWhereInput={}
+const whereCondition:Prisma.productWhereInput={}
+const andCondition:Prisma.productWhereInput[]=[]
+
   let condition: Prisma.productFindManyArgs = {where:whereCondition };
   if ((limit || limit === 0) && (offset || offset === 0)) {
     condition = { ...condition, skip: offset, take: limit};
@@ -430,17 +432,16 @@ let whereCondition:Prisma.productWhereInput={}
   if(searchPayload.searchText){
 const condition1:Prisma.productWhereInput={description:{contains:searchPayload.searchText,mode:"insensitive"}}
 const condition2:Prisma.productWhereInput={name:{contains:searchPayload.searchText,mode:"insensitive"}}
-whereCondition.OR=[condition1,condition2]
+andCondition.push({OR:[condition1,condition2]})
   }  
-
+ 
   if(searchPayload.brand){
     const brands=searchPayload.brand.split(",")
     const queryConditons:Prisma.brandWhereInput[]=brands.map((text) => ({name: {
       contains: text,
       mode: 'insensitive',  
     }}))
-    whereCondition={...whereCondition,brand:{OR:queryConditons}}
-    condition={...condition,where:whereCondition}
+    andCondition.push({brand:{OR:queryConditons}})
     
   }
   
@@ -450,8 +451,7 @@ whereCondition.OR=[condition1,condition2]
       contains: text,
       mode: 'insensitive',  
     }}))
-    whereCondition={...whereCondition,categoryref:{OR:queryConditons}}
-    condition={...condition,where:whereCondition}
+   andCondition.push({categoryref:{OR:queryConditons}})
     
   } 
 
@@ -461,26 +461,27 @@ whereCondition.OR=[condition1,condition2]
       contains: text,
       mode: 'insensitive',  
     }}))
-    whereCondition={...whereCondition,shop:{OR:queryConditons}}
-    condition={...condition,where:whereCondition}
+    andCondition.push({shop:{OR:queryConditons}})
+    
     
   } 
 
   if(searchPayload.flashSale==="true"){
      
-    whereCondition.flashSale={equals:true}
+    andCondition.push({flashSale:{equals:true}})
     
   } 
 
   if(searchPayload.flashSale==="false"){
-     
-    whereCondition.flashSale={equals:false}
+
+ andCondition.push({flashSale:{equals:false}})
+
     
   } 
 
   if(searchPayload.flashSale==="false_true"){
 
-    whereCondition.OR=whereCondition.OR?[...whereCondition.OR,{flashSale:{equals:true}},{flashSale:{equals:false}}]:[{flashSale:{equals:true}},{flashSale:{equals:false}}]
+    andCondition.push({OR:[{flashSale:{equals:true}},{flashSale:{equals:false}}]})
     
   } 
 
@@ -488,10 +489,14 @@ whereCondition.OR=[condition1,condition2]
 const prices=searchPayload.priceRange.split("-")
 const condition1:Prisma.productWhereInput={price:{gte:Number(prices[0]) }}
 const condition2:Prisma.productWhereInput={price:{lte:Number(prices[1]) }}
-whereCondition.AND=[condition1,condition2]
+andCondition.push(condition1)
+andCondition.push(condition2)
+ 
   } 
  
-
+  whereCondition.AND=andCondition
+  console.log(searchPayload) 
+console.dir(condition,{depth:"infinity"})
   const result = await prisma.product.findMany(condition);
 
   return { total: count, result };
