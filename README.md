@@ -13,7 +13,7 @@ This repository serves as the backend for our e-commerce platform, providing a s
 - **Database Optimization:** Well-structured database models for efficient querying and data consistency.
 - **RESTful API:** Provides well-documented endpoints for seamless integration with the frontend.
 - **Error Handling:** Centralized error management for smooth and predictable API responses.
-- **Scalable Architecture:** Designed to accommodate future feature expansions and high traffic loads.
+- **Scalable Architecture:** Designed to accommodate future feature expansions and high traffic loadS.
 
 ## Technology Used
 
