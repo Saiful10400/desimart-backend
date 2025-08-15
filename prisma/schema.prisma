@@ -169,6 +169,7 @@ model order {
   shop   shop   @relation(fields: [shopId], references: [shopId])
 
   amount        Float
+  address       String
   paymentStatus paymentStatus @default(Unpaid)
   transectionId String?
 
@@ -242,9 +243,9 @@ enum publishStatus {
 }
 
 model banner {
-  bannerId  String @id @default(uuid())
+  bannerId  String   @id @default(uuid())
   bannerUrl String
   route     String?
-  created DateTime  @default(now())
-  updated DateTime  @updatedAt()
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt()
 }

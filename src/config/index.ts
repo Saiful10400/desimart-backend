@@ -8,6 +8,7 @@ dotenv.config({path:path.join(process.cwd(),".env")})
 
 export default{
     frontend_url:process.env.FRONT_END_URL,
+    backend_url:process.env.BACK_END_URL,
     port:process.env.PORT,
     jwtSecret:process.env.JWT_SECRET,
     accessTokenLife:process.env.access_token_life,
