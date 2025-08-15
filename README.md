@@ -7,7 +7,7 @@ This repository serves as the backend for our e-commerce platform, providing a s
 
 ### Core Features
 - **Product Management:** Comprehensive CRUD operations for products, categories, and inventory.
-- **User Authentication:** Secure user registration, login, and role-based access control (RBAC).
+- **User Authentication:** Secure user registration, login, and role-based access control (RBAC) .
 - **Order Processing:** Efficient order management, including cart handling, checkout, and order history.
 - **Payment Integration:** Supports secure payment processing through multiple payment gateways.
 - **Database Optimization:** Well-structured database models for efficient querying and data consistency.
